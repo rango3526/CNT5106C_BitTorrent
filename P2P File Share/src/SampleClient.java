@@ -4,6 +4,11 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
+/*
+
+This entire file is just for reference; we're not using it
+
+*/
 public class SampleClient {
 	Socket requestSocket;           //socket connect to the server
 	ObjectOutputStream out;         //stream write to the socket
