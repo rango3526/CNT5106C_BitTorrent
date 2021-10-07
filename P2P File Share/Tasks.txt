@@ -1,49 +1,50 @@
 Tasks:
 
-Message builder / unbuilder
+Message builder / unbuilder (Tre')
 	- convert Length, Message Type, Payload into a byte array
 	- convert from byte array to the individual pieces
-Handshake message
+Handle handshake (David)
 	- pass in handshake info to message builder
-Handle handshake
 	- using info from received (unbuilt) handshake message, set variables and stuff
 	- also check that the handshake header and peerID are correct
 	- after handshake send bitfield
-Connect to all other peers from Client.java
+Connect to all other peers from Client.java (Ranger)
 	- on startup try to connect to all peers (who have already started up)
 	- once connected send handshake message
-Listen for connections in Server.java
+Listen for connections in Server.java (Ranger)
 	- keep listening for connections
 	- once connection received, receive and handle handshake
-Read config files
+Read config files (Tre')
 	- read the config files and put the values into variables
 	- have interface for other functions to find config values easily
-Implement a neighbor handler
-	- every p seconds reselect the preferred neighbors (those that send data at highest rate)
-	- unchoke the neighbors it chooses, and choke the rest
-	- handle "request" messages that come in after unchoking neighbors
-	- 1 optimistically unchoked neighbor (reselected every m seconds)
 
 
-Write bitfield builder/unbuilder
+
+Write bitfield builder/unbuilder (Ranger)
 	- with existing info building bitfield (file that says which pieces I have)
 	- deconstruct peer bitfields to see who has what
 	- also keep track of all peer bitfields
-Write filehandler
+Write filehandler (Ranger)
 	- keeps track of all of the pieces I have and can put them together/take them apart
-Send "have" messages to everyone when receiving new piece
-	- whenever current bitfield is updated, send have messages to all neighbors
-Write interest determining function
-	- after receiving a "have" message, decide whether to send an "interested" message
-Write choke determining function
-	- decide who to send choke messages to
-Write structure for piece messages
+Write structure for piece messages (Ranger)
 	- determine format of a piece message (how big is it, etc)
+Send "have" messages to everyone when receiving new piece (David)
+	- whenever current bitfield is updated, send have messages to all neighbors
+Write interest determining function (David)
+	- after receiving a "have" message, decide whether to send an "interested" message
+Write choke determining function (Tre')
+	- decide who to send choke messages to
+
 Write request determining function
 	- who to send request messages to
 	- only request a piece from one peer (don't request the same piece from multiple)
 Write piece determining function
 	- who to send pieces to
+Implement a neighbor handler
+    - every p seconds reselect the preferred neighbors (those that send data at highest rate)
+    - unchoke the neighbors it chooses, and choke the rest
+    - handle "request" messages that come in after unchoking neighbors
+    - 1 optimistically unchoked neighbor (reselected every m seconds)
 
 
 Write logger
