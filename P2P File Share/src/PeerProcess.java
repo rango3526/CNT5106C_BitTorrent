@@ -7,6 +7,7 @@ public class PeerProcess {
 
     public static void main(String args[]) {
         selfClientID = getSelfClientID(args);
+        Bitfield.init(selfClientID);
         startServer();
         connectToPeers();
     }
@@ -28,6 +29,6 @@ public class PeerProcess {
     }
 
     public static void startServer() {
-
+        Server.startServer(selfClientID);
     }
 }

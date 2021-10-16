@@ -13,20 +13,31 @@ This entire file is just for reference; we're not using it
 public class Server {
 
 	private static final int sPort = 8000;   //The server will be listening on this port number
+	public static int selfClientID = -1;
 
-	public static void main(String[] args) throws Exception {
-		System.out.println("The server is running."); 
-		ServerSocket listener = new ServerSocket(sPort);
-		int clientNum = 1;
+	public static void startServer(int _selfClientID) {
+		// Might need a thread on the outside here
+
 		try {
-			while(true) {
-				new Handler(listener.accept(),clientNum).start();
-				System.out.println("Client "  + clientNum + " is connected!");
-				clientNum++;
-			}
-		} finally {
-			listener.close();
-		} 
+			selfClientID = _selfClientID;
+	
+			System.out.println("The server is running."); 
+			ServerSocket listener = new ServerSocket(sPort);
+			int clientNum = 1;
+			try {
+				while(true) {
+					new Handler(listener.accept(),clientNum, selfClientID).start();
+					System.out.println("Client "  + clientNum + " is connected!");
+					clientNum++;
+				}
+			} finally {
+				listener.close();
+			} 
+		}
+		catch (Exception e) {
+			System.out.println("Server crashed: ");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -40,10 +51,12 @@ public class Server {
 		private ObjectInputStream in;	//stream read from the socket
 		private ObjectOutputStream out;    //stream write to the socket
 		private int no;		//The index number of the client
+		private int selfClientID = -1;
 
-		public Handler(Socket connection, int no) {
+		public Handler(Socket connection, int no, int selfClientID) {
 			this.connection = connection;
 			this.no = no;
+			this.selfClientID = selfClientID;
 		}
 
 		public void run() {

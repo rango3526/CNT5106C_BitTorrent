@@ -19,4 +19,16 @@ public class ConfigReader {
         // ex. when I give client ID 1001, return the port of client 1001
         throw new UnsupportedOperationException();
     }
+
+    public static int getFileSize() {
+        // the number in Common.cfg
+        throw new UnsupportedOperationException();
+    }
+
+    public static int getPieceSize() {
+        // the number in Common.cfg
+        throw new UnsupportedOperationException();
+    }
+
+    // Also need to read the other parts of the configs
 }
