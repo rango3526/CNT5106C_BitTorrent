@@ -1,6 +1,9 @@
 import java.util.*;
 
 public class ConfigReader {
+    // TODO: Tre'
+
+
     String pathToCommonCfg = "../config/Common.cfg";        // these paths might be wrong, not sure about the double . at the start
     String pathToPeerInfoCfg = "../config/PeerInfo.cfg";
 

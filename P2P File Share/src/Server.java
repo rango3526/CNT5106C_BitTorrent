@@ -52,6 +52,7 @@ public class Server {
 		private ObjectOutputStream out;    //stream write to the socket
 		private int no;		//The index number of the client
 		private int selfClientID = -1;
+		private int peerID = -1;
 
 		public Handler(Socket connection, int no, int selfClientID) {
 			this.connection = connection;
@@ -70,6 +71,9 @@ public class Server {
 					{
 						messageFromClient = receiveMessage();
 						handleHandshake(messageFromClient);
+
+						messageFromClient = receiveMessage();
+						handleBitfieldMessage(messageFromClient);
 					}
 				}
 				catch(ClassNotFoundException classnot){
@@ -109,9 +113,17 @@ public class Server {
 			return (byte[])in.readObject();
 		}
 
+		// TODO: David
 		public void handleHandshake(byte[] handshake) {
-			// involves sending the handshake reply
+			// involves sending the handshake reply to the client
+			// also set the peerID variable (currently declared on line 55)
 			throw new UnsupportedOperationException();
+		}
+
+		public void handleBitfieldMessage(byte[] bitfieldMessage) {
+			Bitfield.setPeerBitfield(peerID, Bitfield.byteArrayToBitfield(ActualMessageHandler.extractPayload(bitfieldMessage)));
+
+			// TODO: Ranger, find out what to do after receiving bitfield
 		}
 
 	}

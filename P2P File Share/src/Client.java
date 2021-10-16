@@ -44,6 +44,9 @@ public class Client {
 				messageToSend = Handshake.getHandshakeMessage(clientID, peerID);
 				sendMessage(messageToSend);
 				messageFromServer = receiveMessage();
+				handleHandshakeResponse(messageFromServer);
+
+				sendBitfieldMessage();
 			}
 		}
 		catch (ConnectException e) {
@@ -95,5 +98,12 @@ public class Client {
         return ConfigReader.getIPFromPeerID(id);
     }
 
-	
+	// TODO: David
+	void handleHandshakeResponse(byte[] handshakeResponse) {
+		throw new UnsupportedOperationException();
+	}
+
+	void sendBitfieldMessage() {
+		ActualMessageHandler.constructBitfieldMessage(Bitfield.getBitfieldMessagePayload());
+	}
 }

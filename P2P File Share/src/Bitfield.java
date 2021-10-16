@@ -50,7 +50,7 @@ public class Bitfield {
         return bitfields.get(peerID);
     }
 
-    public static BitSet getMyBitfield() {
+    public static BitSet getSelfBitfield() {
         return bitfields.get(selfClientID);
     }
 
@@ -64,5 +64,13 @@ public class Bitfield {
     
     public static boolean doesPeerHavePiece(int peerID, int pieceIndex) {
         return bitfields.get(peerID).get(pieceIndex);
+    }
+
+    public static byte[] getSelfBitfieldAsByteArray() {
+        return bitfieldToByteArray(getSelfBitfield());
+    }
+
+    public static byte[] getBitfieldMessagePayload() {
+        return getSelfBitfieldAsByteArray();
     }
 }

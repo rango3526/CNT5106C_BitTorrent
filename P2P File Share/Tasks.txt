@@ -8,10 +8,10 @@ Handle handshake (David)
 	- using info from received (unbuilt) handshake message, set variables and stuff
 	- also check that the handshake header and peerID are correct
 	- after handshake send bitfield
-Connect to all other peers from Client.java (Ranger)
+Connect to all other peers from Client.java (Ranger)*
 	- on startup try to connect to all peers (who have already started up)
 	- once connected send handshake message
-Listen for connections in Server.java (Ranger)
+Listen for connections in Server.java (Ranger)*
 	- keep listening for connections
 	- once connection received, receive and handle handshake
 Read config files (Tre')
@@ -20,13 +20,13 @@ Read config files (Tre')
 
 
 
-Write bitfield builder/unbuilder (Ranger)
+Write bitfield builder/unbuilder (Ranger)*
 	- with existing info building bitfield (file that says which pieces I have)
 	- deconstruct peer bitfields to see who has what
 	- also keep track of all peer bitfields
 Write filehandler (Ranger)
 	- keeps track of all of the pieces I have and can put them together/take them apart
-Write structure for piece messages (Ranger)
+Write structure for piece messages (Ranger)*
 	- determine format of a piece message (how big is it, etc)
 Send "have" messages to everyone when receiving new piece (David)
 	- whenever current bitfield is updated, send have messages to all neighbors
