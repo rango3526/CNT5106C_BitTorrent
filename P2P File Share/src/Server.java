@@ -27,7 +27,6 @@ public class Server {
 		} finally {
 			listener.close();
 		} 
-
 	}
 
 	/**
@@ -35,8 +34,8 @@ public class Server {
 	 * loop and are responsible for dealing with a single client's requests.
 	 */
 	private static class Handler extends Thread {
-		private String message;    //message received from the client
-		private String MESSAGE;    //uppercase message send to the client
+		private byte[] messageFromClient;    //message received from the client
+		private byte[] messageToSend;    //uppercase message send to the client
 		private Socket connection;
 		private ObjectInputStream in;	//stream read from the socket
 		private ObjectOutputStream out;    //stream write to the socket
@@ -56,10 +55,8 @@ public class Server {
 				try{
 					while(true)
 					{
-						//receive the message sent from the client
-						message = (String)in.readObject();
-
-                        
+						messageFromClient = receiveMessage();
+						handleHandshake(messageFromClient);
 					}
 				}
 				catch(ClassNotFoundException classnot){
@@ -83,7 +80,7 @@ public class Server {
 		}
 
 		//send a message to the output stream
-		public void sendMessage(String msg)
+		public void sendMessage(byte[] msg)
 		{
 			try{
 				out.writeObject(msg);
@@ -93,6 +90,15 @@ public class Server {
 			catch(IOException ioException){
 				ioException.printStackTrace();
 			}
+		}
+
+		public byte[] receiveMessage() throws IOException, ClassNotFoundException {
+			return (byte[])in.readObject();
+		}
+
+		public void handleHandshake(byte[] handshake) {
+			// involves sending the handshake reply
+			throw new UnsupportedOperationException();
 		}
 
 	}

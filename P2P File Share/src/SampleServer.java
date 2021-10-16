@@ -27,7 +27,6 @@ public class SampleServer {
 		} finally {
 			listener.close();
 		} 
-
 	}
 
 	/**

@@ -16,7 +16,7 @@ public class SampleClient {
 	String message;                //message send to the server
 	String MESSAGE;                //capitalized message read from the server
 
-	public void SampleClient() {}
+	public SampleClient() {}
 
 	void run()
 	{
@@ -68,6 +68,7 @@ public class SampleClient {
 			}
 		}
 	}
+	
 	//send a message to the output stream
 	void sendMessage(String msg)
 	{
@@ -80,6 +81,7 @@ public class SampleClient {
 			ioException.printStackTrace();
 		}
 	}
+
 	//main method
 	public static void main(String args[])
 	{
