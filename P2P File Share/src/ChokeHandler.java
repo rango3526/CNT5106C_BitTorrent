@@ -1,5 +1,3 @@
-// Contains functions for choke and unchoke signals
-
 import java.util.*;
 
 public class ChokeHandler implements Runnable
