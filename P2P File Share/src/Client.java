@@ -21,6 +21,9 @@ public class Client {
 	int port = -1;
 	String ip = "";
 
+	long cumulativeDownloadTimeNanoseconds = 0;
+	long cumulativeBytesDownloaded = 0;
+
 	public Client(int _clientID, int _peerID) {
 		peerID = _peerID;
 		clientID = _clientID;
@@ -87,7 +90,14 @@ public class Client {
 	}
 
 	byte[] receiveMessage() throws IOException, ClassNotFoundException {
-		return (byte[])in.readObject();
+		long startTime = System.nanoTime();
+		byte[] obj = (byte[])in.readObject();
+		long endTime = System.nanoTime();
+
+		cumulativeDownloadTimeNanoseconds += endTime - startTime;
+		cumulativeBytesDownloaded += obj.length;
+
+		return obj;
 	}
 
 	int getPortFromPeerID(int id) { // use the config file
@@ -105,5 +115,18 @@ public class Client {
 
 	void sendBitfieldMessage() {
 		ActualMessageHandler.constructBitfieldMessage(Bitfield.getBitfieldMessagePayload());
+	}
+
+	public double getDownloadRateInKBps() {		// KiloBytes per second
+		double downloadRate = ((double)cumulativeBytesDownloaded/1000.0*1000000000/(double)cumulativeDownloadTimeNanoseconds);
+		return downloadRate;
+	}
+
+	public void UnchokePeer() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void ChokePeer() {
+		throw new UnsupportedOperationException();
 	}
 }

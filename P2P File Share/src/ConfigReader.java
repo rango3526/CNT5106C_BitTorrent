@@ -33,5 +33,8 @@ public class ConfigReader {
         throw new UnsupportedOperationException();
     }
 
+    public static int getNumPreferredNeighbors() {
+        throw new UnsupportedOperationException();
+    }
     // Also need to read the other parts of the configs
 }

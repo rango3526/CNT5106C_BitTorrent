@@ -8,6 +8,10 @@ public class ActualMessageHandler {
         throw new UnsupportedOperationException();
     }
 
+    public static byte[] constructChokeMessage(int peerID, boolean choke) { // if choke is false, then unchoke
+        throw new UnsupportedOperationException();
+    }
+
     public static byte[] extractPayload(byte[] fullMessage) {
         throw new UnsupportedOperationException();
     }

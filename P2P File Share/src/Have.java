@@ -9,5 +9,6 @@ public class Have {
 
     public byte[] sendHaveMessage(int pieceIndex) {
         // construct byte array with correct format
+        throw new UnsupportedOperationException();
     }
 }

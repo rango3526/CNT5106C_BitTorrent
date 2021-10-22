@@ -16,7 +16,6 @@ public class Handshake {
 
 	public byte[] sendHandshake() {
 		return (header + bits + peerId).getBytes();
-
 	}
 
     public static byte[] getHandshakeMessage(int fromClientID, int toPeerID) {

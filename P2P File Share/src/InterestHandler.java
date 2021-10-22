@@ -1,3 +1,6 @@
+import java.util.Collection;
+import java.util.List;
+
 // Contains functions for interested and not interested signals
 
 public class InterestHandler {
@@ -10,5 +13,10 @@ public class InterestHandler {
 
     public byte [] sendInterestMessage() {
         // return byte array of correct format
+        throw new UnsupportedOperationException();
+    }
+
+    public static List<Integer> GetNonInterestedPeers() {
+        throw new UnsupportedOperationException();
     }
 }
