@@ -120,6 +120,7 @@ public class Client {
 		String headerString = new String(headerbytes);
 		String zerobitString = new String(zerobitsbytes);
 		String peerIdString = new String(peerIdbytes);
+		int peerIdInt = Integer.parseInt(peerIdString);
 		throw new UnsupportedOperationException();
 	}
 
