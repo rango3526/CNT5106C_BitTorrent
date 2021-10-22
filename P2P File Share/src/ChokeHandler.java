@@ -13,17 +13,19 @@ public class ChokeHandler
 		
 		List<PeerInfoDownloadSpeed> preferredNeighbors = peerDownloadSpeeds.subList(0, ConfigReader.getNumPreferredNeighbors());
 
-        List<Integer> peerIDs = new ArrayList<>();
-        for (PeerInfoDownloadSpeed pids : preferredNeighbors) {
-            peerIDs.add(pids.peerID);
-        }
+        	List<Integer> peerIDs = new ArrayList<>();
+        	for (PeerInfoDownloadSpeed pids : preferredNeighbors) 
+		{
+            		peerIDs.add(pids.peerID);
+        	}
 
-        return peerIDs;
+        	return peerIDs;
 	}
-
-    public static List<Integer> GetChokedNeighbors() {
-        throw new UnsupportedOperationException();
-    }
+	
+	public static List<Integer> GetChokedNeighbors() 
+	{
+        	throw new UnsupportedOperationException();
+    	}
 
 	static class PeerInfoDownloadSpeed
 	{
