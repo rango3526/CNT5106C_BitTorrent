@@ -73,4 +73,13 @@ public class Bitfield {
     public static byte[] getBitfieldMessagePayload() {
         return getSelfBitfieldAsByteArray();
     }
+
+    // does this client need at least 1 piece from the peer with peerID?
+    public static boolean ClientNeedsPiecesFromPeer(int peerID) { 
+        throw new UnsupportedOperationException();
+    }
+
+    public static int GetFirstPieceIndexNeedFromPeer(int peerID) {
+        throw new UnsupportedOperationException();
+    }
 }
