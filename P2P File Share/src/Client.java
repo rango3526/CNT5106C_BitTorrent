@@ -110,7 +110,7 @@ public class Client {
 
 	// TODO: David
 	void handleHandshakeResponse(byte[] handshakeResponse) {
-		ByteBuffer bytearray = ByteBuffer.wrap(handshake);
+		ByteBuffer bytearray = ByteBuffer.wrap(handshakeResponse);
 		byte[] headerbytes = new byte[18];
     	byte[] zerobitsbytes = new byte[10];
     	byte[] peerIdbytes = new byte[4];
