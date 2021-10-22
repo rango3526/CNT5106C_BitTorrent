@@ -15,4 +15,8 @@ public class ActualMessageHandler {
     public static byte[] extractPayload(byte[] fullMessage) {
         throw new UnsupportedOperationException();
     }
+
+    public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
+        throw new UnsupportedOperationException();
+    }
 }

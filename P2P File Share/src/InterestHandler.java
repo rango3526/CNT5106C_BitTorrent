@@ -11,7 +11,7 @@ public class InterestHandler {
 
     }
 
-    public byte [] sendInterestMessage() {
+    public static byte [] GetInterestMessage() {
         // return byte array of correct format
         throw new UnsupportedOperationException();
     }
