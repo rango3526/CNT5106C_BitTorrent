@@ -1,11 +1,21 @@
+
 public class Handshake {
 
 	// TODO: David
 
-	private final static String header = "P2PFILESHARINGPROJ";
-    private final static String bits = "0000000000";
+	private final String header = "P2PFILESHARINGPROJ";
+    private final String bits = "0000000000";
+    private int peerId;
+	
+	Handshake() {
 
-	public static byte[] createHandshake(int peerId) {
+	}
+
+	public Handshake(int peerId) {
+		this.peerId = peerId;
+	}
+
+	public byte[] sendHandshake() {
 		return (header + bits + peerId).getBytes();
 	}
 

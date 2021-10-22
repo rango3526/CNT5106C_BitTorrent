@@ -1,3 +1,4 @@
+
 import java.net.*;
 import java.io.*;
 import java.nio.*;
@@ -5,9 +6,7 @@ import java.nio.channels.*;
 import java.util.*;
 
 /*
-
 This entire file is just for reference; we're not using it
-
 */
 
 public class Server {
@@ -117,19 +116,7 @@ public class Server {
 		public void handleHandshake(byte[] handshake) {
 			// involves sending the handshake reply to the client
 			// also set the peerID variable (currently declared on line 55)
-			ByteBuffer bytearray = ByteBuffer.wrap(handshake);
-			byte[] headerbytes = new byte[18];
-        	byte[] zerobitsbytes = new byte[10];
-        	byte[] peerIdbytes = new byte[4];
-        	bytearray.get(headerbytes, 0, headerbytes.length);
-        	bytearray.get(zerobitsbytes, 0, zerobitsbytes.length);
-        	bytearray.get(peerIdbytes, 0, peerIdbytes.length);
-			String headerString = new String(headerbytes);
-			String zerobitString = new String(zerobitsbytes);
-			String peerIdString = new String(peerIdbytes);
-			int peerIdInt = Integer.parseInt(peerIdString);
-			byte [] handshakeMsg = Handshake.createHandshake(peerIdInt);
-			sendMessage(handshakeMsg);
+			throw new UnsupportedOperationException();
 		}
 
 		public void handleBitfieldMessage(byte[] bitfieldMessage) {

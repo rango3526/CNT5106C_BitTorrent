@@ -1,5 +1,4 @@
 
-
 public class Have {
     public static final int TYPE = 4;
 

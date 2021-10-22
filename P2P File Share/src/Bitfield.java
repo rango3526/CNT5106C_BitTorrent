@@ -1,4 +1,6 @@
+
 import java.util.HashMap;
+import java.io.IOException;
 import java.util.*;
 
 public class Bitfield {
@@ -8,7 +10,7 @@ public class Bitfield {
     
     private static boolean initialized = false;
 
-    public static void init(int selfClientID) {
+    public static void init(int selfClientID) throws IOException {
         if (!initialized) {
             calculatePieceAmt();
             

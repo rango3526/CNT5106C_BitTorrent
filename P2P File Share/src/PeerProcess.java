@@ -1,3 +1,5 @@
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,14 +11,14 @@ public class PeerProcess {
     static Map<Integer, Client> allClients = new HashMap<Integer, Client>();
     static int selfClientID = -1;
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
         selfClientID = getSelfClientID(args);
         Bitfield.init(selfClientID);
         startServer();
         connectToPeers();
     }
 
-    public static void connectToPeers() {
+    public static void connectToPeers() throws IOException {
         List<Integer> peerIDs = ConfigReader.getAllPeerIDs();
 
         for (Integer peerID : peerIDs) {
