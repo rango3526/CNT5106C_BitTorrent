@@ -50,6 +50,12 @@ public class Client {
 				handleHandshakeResponse(messageFromServer);
 
 				sendBitfieldMessage();
+
+				messageFromServer = receiveMessage();
+				handleBitfieldMessage(messageFromServer);
+
+				messageFromServer = receiveMessage();
+				handleUnchokeMessage(messageFromServer);
 			}
 		}
 		catch (ConnectException e) {
@@ -138,5 +144,23 @@ public class Client {
 
 	public void ChokePeer() {
 		throw new UnsupportedOperationException();
+	}
+
+	public void handleBitfieldMessage(byte[] bitfieldMessage) {
+		BitSet peerBitfield = Bitfield.byteArrayToBitfield(ActualMessageHandler.extractPayload(bitfieldMessage));
+		Bitfield.setPeerBitfield(peerID, peerBitfield);
+		if (Bitfield.ClientNeedsPiecesFromPeer(peerID)) {
+			sendMessage(InterestHandler.GetInterestMessage());
+		}
+	}
+
+	public void handleUnchokeMessage(byte[] unchokeMessage) {
+		if (Bitfield.ClientNeedsPiecesFromPeer(peerID)) {
+			byte[] requestMessage;
+
+			int neededPieceIndex = Bitfield.GetFirstPieceIndexNeedFromPeer(peerID);
+
+			requestMessage = Request.GenerateRequestMessage(neededPieceIndex);
+		}
 	}
 }

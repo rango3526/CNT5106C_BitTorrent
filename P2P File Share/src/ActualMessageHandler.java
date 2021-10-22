@@ -33,5 +33,12 @@ public class ActualMessageHandler {
     	
 		
     }
-    public static int getMsgType(byte[] msgType)
+  
+    public static int getMsgType(byte[] msgType) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
+        throw new UnsupportedOperationException();
+    }
 }

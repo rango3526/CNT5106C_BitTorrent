@@ -51,4 +51,12 @@ public class PeerProcess {
     public static void startServer() {
         Server.startServer(selfClientID);
     }
+
+    public static void BroadcastHavePiece(int pieceIndex) {
+        byte[] haveMessage = Have.generateHaveMessage(pieceIndex);
+        
+        for (Client c : allClients.values()) {
+            c.sendMessage(haveMessage);
+        }
+    }
 }
