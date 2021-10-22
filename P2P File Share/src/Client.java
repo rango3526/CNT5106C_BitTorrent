@@ -121,7 +121,6 @@ public class Client {
 		String zerobitString = new String(zerobitsbytes);
 		String peerIdString = new String(peerIdbytes);
 		int peerIdInt = Integer.parseInt(peerIdString);
-		throw new UnsupportedOperationException();
 	}
 
 	void sendBitfieldMessage() {

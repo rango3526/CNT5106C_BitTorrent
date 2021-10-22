@@ -128,7 +128,8 @@ public class Server {
 			String zerobitString = new String(zerobitsbytes);
 			String peerIdString = new String(peerIdbytes);
 			int peerIdInt = Integer.parseInt(peerIdString);
-			throw new UnsupportedOperationException();
+			byte [] handshakeMsg = Handshake.createHandshake(peerIdInt);
+			sendMessage(handshakeMsg);
 		}
 
 		public void handleBitfieldMessage(byte[] bitfieldMessage) {
