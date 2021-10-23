@@ -16,14 +16,15 @@ public class Have {
             for (int i = 0; i < pieceByteArray.length; i++) {
                 newBytes[i] = pieceByteArray[i];
             }
+            pieceByteArray = newBytes;
         }
 
-        return ActualMessageHandler.constructHaveMessage(newBytes);
+        return ActualMessageHandler.constructHaveMessage(pieceByteArray);
     }
 
     public static int haveMessagePayloadToPieceIndex(byte[] haveMessagePayload) {
         // TODO: Ranger, check if little-endian vs big-endian, also check in generateHaveMessage
-        ByteBuffer wrappedBB = ByteBuffer.wrapped(haveMessagePayload); 
+        ByteBuffer wrappedBB = ByteBuffer.wrap(haveMessagePayload); 
         return wrappedBB.getInt();
     }
 

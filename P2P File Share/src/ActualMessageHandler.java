@@ -1,3 +1,5 @@
+import java.nio.ByteBuffer;
+
 public class ActualMessageHandler {
     // I think Actual Messages are anything except Handshake messages
 
@@ -24,7 +26,7 @@ public class ActualMessageHandler {
             return msgpayloadbytes;
 
         } else {
-            msgLengthInt = Integer.parseInt(msgLengthString);
+            int msgLengthInt = Integer.parseInt(msgLengthString);
             byte[] msgpayloadbytes = new byte[msgLengthInt];
             bytearray.get(msgpayloadbytes, 0, msgpayloadbytes.length);
             String msgpayloadString = new String(msgpayloadbytes);
@@ -39,6 +41,10 @@ public class ActualMessageHandler {
     }
 
     public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static byte[] constructPieceMessage(byte[] pieceBytes) {
         throw new UnsupportedOperationException();
     }
 }
