@@ -1,15 +1,16 @@
-
 import java.io.File;
 import java.util.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.*;
 
 public class ConfigReader 
 {
     // TODO: Tre'
-    String pathToCommonCfg = "../config/Common.cfg";        // these paths might be wrong, not sure about the double . at the start
-    String pathToPeerInfoCfg = "../config/PeerInfo.cfg";
+    //Paths may be incorrect...
+    static String pathToPeerInfoCfg = "../config/PeerInfo.cfg";
+    static String pathToCommonCfg = "../config/Common.cfg";
 
     public static List<Integer> getAllPeerIDs()
     {
@@ -17,7 +18,7 @@ public class ConfigReader
     	//Return list of client IDs (i.e. 1001, 1002, 1003, etc.)
         try {
             int peerID;
-            Scanner scan = new Scanner(new File("PeerInfo.cfg"));
+            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
             String info = "";
             while(scan.hasNextLine())
             {
@@ -42,7 +43,7 @@ public class ConfigReader
             //Given a peerID, return the IP of that client (i.e. peerID = 1001, return IP of client 1001)
             InetAddress peerIP = null;
             String peer = "";
-            Scanner scan = new Scanner(new File("PeerInfo.cfg"));
+            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
             while(scan.hasNextLine()) 
             {
                 peer = scan.nextLine();
@@ -57,7 +58,7 @@ public class ConfigReader
     {
             //Given a peerID, return the port of that client (i.e. peerID = 1001, return port of client 1001)
             int peerPort = 0;
-            Scanner scan = new Scanner(new File("PeerInfo.cfg"));
+            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
             String info = "";
             while(scan.hasNextLine())
             {
@@ -73,7 +74,7 @@ public class ConfigReader
     {
             //Given a peerID, return the state of that client (i.e. peerID = 1001, return state of client 1001 which will be 0 or 1)
             int state = 0;
-            Scanner scan = new Scanner(new File("PeerInfo.cfg"));
+            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
             String info = "";
             while(scan.hasNextLine())
             {
@@ -89,7 +90,7 @@ public class ConfigReader
     {
     	//Get number of preferred neighbors from Common.cfg
     	int numOfPreferredNeighbors = 0;
-    	Scanner scan = new Scanner(new File("Common.cfg"));
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
     	String file = scan.nextLine();
     	String [] neighbors = file.split("\\s+");
     	numOfPreferredNeighbors = Integer.parseInt(neighbors[1]);
@@ -102,7 +103,7 @@ public class ConfigReader
     {
     	//Get the unchoking interval from Common.cfg
     	int unchokeInterval = 0;
-    	Scanner scan = new Scanner(new File("Common.cfg"));
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
     	scan.nextLine();
     	String file = scan.nextLine();
     	String [] unchoke = file.split("\\s+");
@@ -116,9 +117,11 @@ public class ConfigReader
     {
     	//Get the optimistic unchoking interval from Common.cfg
     	int optimisticUnchokeInterval = 0;
-    	Scanner scan = new Scanner(new File("Common.cfg"));
-    	scan.nextLine();
-    	scan.nextLine();
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
+    	for(int i = 0; i <= 1; i++)
+    	{
+    		scan.nextLine();
+    	}
     	String file = scan.nextLine();
     	String [] optimisticUnchoke = file.split("\\s+");
     	optimisticUnchokeInterval = Integer.parseInt(optimisticUnchoke[1]);
@@ -130,10 +133,11 @@ public class ConfigReader
     public static String getFileName() throws IOException
     {
     	//Get the name of the file from Common.cfg
-    	Scanner scan = new Scanner(new File("Common.cfg"));
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
+    	for(int i = 0; i <= 2; i++)
+    	{
+    		scan.nextLine();
+    	}
     	String fileName = scan.nextLine();
     	String [] unchoke = fileName.split("\\s+");
     	fileName = unchoke[1];
@@ -146,11 +150,11 @@ public class ConfigReader
     {
         //Get the specified size of the file from Common.cfg
     	int fileSize = 0;
-    	Scanner scan = new Scanner(new File("Common.cfg"));
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
+    	for(int i = 0; i <= 3; i++)
+    	{
+    		scan.nextLine();
+    	}
     	String file = scan.nextLine();
     	String [] size = file.split("\\s+");
     	fileSize = Integer.parseInt(size[1]);
@@ -163,12 +167,11 @@ public class ConfigReader
     {
     	//Get the specified piece size of the file from Common.cfg
     	int pieceSize = 0;
-    	Scanner scan = new Scanner(new File("Common.cfg"));
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
-    	scan.nextLine();
+    	Scanner scan = new Scanner(new File(pathToCommonCfg));
+    	for(int i = 0; i <= 4; i++)
+    	{
+    		scan.nextLine();
+    	}
     	String file = scan.nextLine();
     	String [] size = file.split("\\s+");
     	pieceSize = Integer.parseInt(size[1]);
