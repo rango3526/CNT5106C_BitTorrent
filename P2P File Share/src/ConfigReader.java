@@ -9,8 +9,8 @@ public class ConfigReader
 {
     // TODO: Tre'
     //Paths may be incorrect...
-    static String pathToPeerInfoCfg = "../config/PeerInfo.cfg";
-    static String pathToCommonCfg = "../config/Common.cfg";
+    static String pathToPeerInfoCfg = "C:/Users/Tre' Jeter/Desktop/Java Projects/Projects/Peer-To-Peer Network/src/PeerInfo.cfg";
+    static String pathToCommonCfg = "C:/Users/Tre' Jeter/Desktop/Java Projects/Projects/Peer-To-Peer Network/src/Common.cfg";
 
     public static List<Integer> getAllPeerIDs()
     {
@@ -38,18 +38,26 @@ public class ConfigReader
         return peerIDList;
     }
 
-    public static InetAddress getIPFromPeerID(int peerID) throws IOException
+	public static InetAddress getIPFromPeerID(int peerID) throws IOException
     {
             //Given a peerID, return the IP of that client (i.e. peerID = 1001, return IP of client 1001)
-            InetAddress peerIP = null;
-            String peer = "";
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            while(scan.hasNextLine()) 
-            {
-                peer = scan.nextLine();
-                String [] placeHolder = peer.split("\\s+");
-                peerIP = InetAddress.getByName(placeHolder[1]);
-            }
+    		@SuppressWarnings("resource")
+			Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
+    		String [] placeHolder = scan.nextLine().split("\\s+");
+    		InetAddress peerIP = null;
+    		while(scan.hasNextLine())
+    		{
+    			if(peerID == Integer.parseInt(placeHolder[0]))
+    			{
+    				peerIP = InetAddress.getByName(placeHolder[1]);
+    				return peerIP;
+    			}
+    			else if(peerID != Integer.parseInt(placeHolder[0]))
+    			{
+    				placeHolder = scan.nextLine().split("\\s+");
+    				//return peerIP;
+    			}
+    		}
             scan.close();
             return peerIP;
     }
@@ -57,14 +65,21 @@ public class ConfigReader
     public static int getPortFromPeerID(int peerID) throws IOException
     {
             //Given a peerID, return the port of that client (i.e. peerID = 1001, return port of client 1001)
-            int peerPort = 0;
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            String info = "";
+            @SuppressWarnings("resource")
+			Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
+    		int peerPort = 0;
+            String [] placeHolder = scan.nextLine().split("\\s+");
             while(scan.hasNextLine())
             {
-                info = scan.nextLine();
-                String [] placeHolder = info.split("\\s+");
-                peerPort = Integer.parseInt(placeHolder[2]);
+            	if(peerID == Integer.parseInt(placeHolder[0]))
+                {
+            		peerPort = Integer.parseInt(placeHolder[2]);
+            		return peerPort;
+                }
+            	else if(peerID != Integer.parseInt(placeHolder[0]))
+            	{
+            		placeHolder = scan.nextLine().split("\\s+");
+            	}
             }
             scan.close();
             return peerPort;
@@ -73,14 +88,21 @@ public class ConfigReader
     public static int getStateFromPeerID(int peerID) throws IOException
     {
             //Given a peerID, return the state of that client (i.e. peerID = 1001, return state of client 1001 which will be 0 or 1)
-            int state = 0;
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            String info = "";
+            @SuppressWarnings("resource")
+			Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
+    		int state = 0;
+            String [] placeHolder = scan.nextLine().split("\\s+");
             while(scan.hasNextLine())
             {
-                info = scan.nextLine();
-                String [] placeHolder = info.split("\\s+");
-                state = Integer.parseInt(placeHolder[3]);
+            	if(peerID == Integer.parseInt(placeHolder[0]))
+            	{
+            		state = Integer.parseInt(placeHolder[3]);
+            		return state;
+            	}
+            	else if(peerID != Integer.parseInt(placeHolder[0]))
+            	{
+            		placeHolder = scan.nextLine().split("\\s+");
+            	}
             }
             scan.close();
             return state;
