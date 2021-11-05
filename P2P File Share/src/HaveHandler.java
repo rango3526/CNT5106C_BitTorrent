@@ -1,10 +1,10 @@
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-public class Have {
+public class HaveHandler {
     public static final int TYPE = 4;
 
-    public Have() {
+    public HaveHandler() {
 
     }
 
@@ -19,7 +19,7 @@ public class Have {
             pieceByteArray = newBytes;
         }
 
-        return ActualMessageHandler.constructHaveMessage(pieceByteArray);
+        return constructHaveMessage(pieceByteArray);
     }
 
     public static int haveMessagePayloadToPieceIndex(byte[] haveMessagePayload) {
@@ -28,8 +28,12 @@ public class Have {
         return wrappedBB.getInt();
     }
 
-    public static void handleHaveMessageReceipt(int fromPeerID, byte[] haveMessagePayload) {
-        int haveIndex = haveMessagePayloadToPieceIndex(haveMessagePayload);
+    public static void receivedHaveMessage(int fromPeerID, byte[] msgPayload) {
+        int haveIndex = haveMessagePayloadToPieceIndex(msgPayload);
         Bitfield.peerReceivedPiece(fromPeerID, haveIndex);
+    }
+
+    public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -26,7 +26,7 @@ public class Bitfield {
             int fileSize = ConfigReader.getFileSize();
             int pieceSize = ConfigReader.getPieceSize();
     
-            pieceAmt = fileSize / pieceSize;;
+            pieceAmt = fileSize / pieceSize;
     
             if (fileSize % pieceSize != 0) {
                 pieceAmt += 1;
@@ -75,11 +75,20 @@ public class Bitfield {
     }
 
     // does this client need at least 1 piece from the peer with peerID?
-    public static boolean ClientNeedsPiecesFromPeer(int peerID) { 
+    public static boolean clientNeedsPiecesFromPeer(int peerID) { 
         throw new UnsupportedOperationException();
     }
 
-    public static int GetFirstPieceIndexNeedFromPeer(int peerID) {
+    public static int getFirstPieceIndexNeedFromPeer(int peerID) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static void receivedBitfieldMessage(int peerID, byte[] msgPayload) {
+
+    }
+
+    public static byte[] constructBitfieldMessage(byte[] bitfield) {
+        // this one is just adding the header (length + message type) to the payload (payload is just the bitfield)
         throw new UnsupportedOperationException();
     }
 }

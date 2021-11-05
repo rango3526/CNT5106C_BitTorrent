@@ -5,11 +5,7 @@ public class Handshake {
 	private final static String header = "P2PFILESHARINGPROJ";
     private final static String bits = "0000000000";
 
-	public static byte[] createHandshake(int peerId) {
-		return (header + bits + peerId).getBytes();
-	}
-
-    public static byte[] getHandshakeMessage(int fromClientID, int toPeerID) {
-		throw new UnsupportedOperationException();
+	public static byte[] getHandshakeMessage(int selfClientID) {
+		return (header + bits + selfClientID).getBytes();
 	}
 }

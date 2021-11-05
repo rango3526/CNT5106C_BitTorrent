@@ -3,17 +3,6 @@ import java.nio.ByteBuffer;
 public class ActualMessageHandler {
     // I think Actual Messages are anything except Handshake messages
 
-    // TODO: Tre'
-
-    public static byte[] constructBitfieldMessage(byte[] bitfield) {
-        // this one is just adding the header (length + message type) to the payload (payload is just the bitfield)
-        throw new UnsupportedOperationException();
-    }
-
-    public static byte[] constructChokeMessage(int peerID, boolean choke) { // if choke is false, then unchoke
-        throw new UnsupportedOperationException();
-    }
-
     public static byte[] extractPayload(byte[] fullMessage) {
         ByteBuffer bytearray = ByteBuffer.wrap(fullMessage);
 		byte[] msglengthbytes = new byte[4];
@@ -32,19 +21,9 @@ public class ActualMessageHandler {
             String msgpayloadString = new String(msgpayloadbytes);
             return msgpayloadbytes;
         }
-    	
-		
     }
   
-    public static int getMsgType(byte[] msgType) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static byte[] constructPieceMessage(byte[] pieceBytes) {
+    public static int getMsgType(byte[] msg) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,3 +1,4 @@
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,7 +11,7 @@ public class PeerProcess {
     static int selfClientID = -1;
 
     public static void main(String args[]) {
-        selfClientID = getSelfClientID(args);
+        selfClientID = Integer.parseInt(args[0]);
         Bitfield.init(selfClientID);
         startServer();
         connectToPeers();
@@ -18,18 +19,19 @@ public class PeerProcess {
 
     public static void connectToPeers() {
         List<Integer> peerIDs = ConfigReader.getAllPeerIDs();
-
+        
         for (Integer peerID : peerIDs) {
-            if (peerID < selfClientID) {
-                allClients.put(peerID, new Client(selfClientID, peerID));
+            try {
+                if (peerID < selfClientID) {
+                    Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
+                    allClients.put(peerID, new Client(connection, true));
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Failed to connect to peer: " + peerID);
+                e.printStackTrace();
             }
         }
-    }
-
-    public static int getSelfClientID(String args[]) {
-        // Depends on how the argument will be passed to PeerProcess by the program that runs all of them
-
-        throw new UnsupportedOperationException();
     }
 
     public static List<Integer> GetPeerIDList() {
@@ -41,19 +43,24 @@ public class PeerProcess {
     }
 
     public static void UnchokePeer(int peerID) {
-        allClients.get(peerID).UnchokePeer();
+        allClients.get(peerID).unchokePeer();
     }
 
     public static void ChokePeer(int peerID) {
-        allClients.get(peerID).ChokePeer();
+        allClients.get(peerID).chokePeer();
     }
 
     public static void startServer() {
-        Server.startServer(selfClientID);
+        try {
+            Server.startServer(selfClientID);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("The server ran into a problem: \n" + e.getMessage());
+        }
     }
 
     public static void BroadcastHaveMessage(int pieceIndex) {
-        byte[] haveMessage = Have.generateHaveMessage(pieceIndex);
+        byte[] haveMessage = HaveHandler.generateHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
             c.sendMessage(haveMessage);
