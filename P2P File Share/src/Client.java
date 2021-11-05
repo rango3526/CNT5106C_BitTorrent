@@ -111,7 +111,7 @@ public class Client {
     }
 
     String getIPFromPeerID(int id) { // use the config file
-        return ConfigReader.getIPFromPeerID(id);
+        return ConfigReader.getIPFromPeerID(id).toString();
     }
 
 	// TODO: David
