@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "P2P File Share/lib/jsch-0.1.54.jar"
+    ]
+}

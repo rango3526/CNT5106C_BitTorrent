@@ -34,19 +34,19 @@ public class PeerProcess {
         }
     }
 
-    public static List<Integer> GetPeerIDList() {
+    public static List<Integer> getPeerIDList() {
         return Arrays.asList((Integer[])allClients.keySet().toArray());
     }
 
-    public static double GetDownloadRateOfPeer(int peerID) {
+    public static double getDownloadRateOfPeer(int peerID) {
         return allClients.get(peerID).getDownloadRateInKBps();
     }
 
-    public static void UnchokePeer(int peerID) {
+    public static void unchokePeer(int peerID) {
         allClients.get(peerID).unchokePeer();
     }
 
-    public static void ChokePeer(int peerID) {
+    public static void chokePeer(int peerID) {
         allClients.get(peerID).chokePeer();
     }
 
@@ -59,12 +59,16 @@ public class PeerProcess {
         }
     }
 
-    public static void BroadcastHaveMessage(int pieceIndex) {
+    public static void broadcastHaveMessage(int pieceIndex) {
         byte[] haveMessage = HaveHandler.generateHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
             c.sendMessage(haveMessage);
         }
+    }
+
+    public static void sendMessageToPeer(int peerID, byte[] message) {
+        allClients.get(peerID).sendMessage(message);
     }
 }
 

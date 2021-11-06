@@ -3,8 +3,8 @@ import java.util.*;
 public class ChokeHandler {
 	public static List<Integer> DeterminePreferredNeighbors() {
 		List<PeerInfoDownloadSpeed> peerDownloadSpeeds = new ArrayList<PeerInfoDownloadSpeed>();
-		for (int peerID : PeerProcess.GetPeerIDList()) {
-			peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.GetDownloadRateOfPeer(peerID)));
+		for (int peerID : PeerProcess.getPeerIDList()) {
+			peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.getDownloadRateOfPeer(peerID)));
 		}
 		peerDownloadSpeeds.sort((a, b) -> Double.compare(b.downloadRate, a.downloadRate));
 
@@ -23,12 +23,17 @@ public class ChokeHandler {
 		throw new UnsupportedOperationException();
 	}
 
-	public static void receivedChokeMessage(int fromPeerID, byte[] msgPayload) {
+	public static void receivedChokeMessage(int otherPeerID, byte[] msgPayload) {
 		throw new UnsupportedOperationException();
 	}
 
-	public static void receivedUnchokeMessage(int fromPeerID, byte[] msgPayload) {
-		throw new UnsupportedOperationException();
+	public static void receivedUnchokeMessage(int otherPeerID, byte[] msgPayload) {
+		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
+			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
+			byte[] requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
+
+			PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
+		}
 	}
 
 	static class PeerInfoDownloadSpeed {

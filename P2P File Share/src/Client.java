@@ -34,9 +34,10 @@ public class Client extends Thread {
 			try {
 				if (shouldInitiateHandshake) {
 					sendMessage(Handshake.getHandshakeMessage(selfClientID));
-					handleHandshakeResponse(receiveMessage());
+					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
+					// TODO: make sure this looks right
 				} else {
-					handleHandshakeResponse(receiveMessage());
+					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
 					sendMessage(Handshake.getHandshakeMessage(selfClientID));
 				}
 
@@ -123,23 +124,6 @@ public class Client extends Thread {
 		return ConfigReader.getIPFromPeerID(id).toString();
 	}
 
-	// TODO: David
-	void handleHandshakeResponse(byte[] handshakeResponse) {
-		ByteBuffer bytearray = ByteBuffer.wrap(handshakeResponse);
-		byte[] headerbytes = new byte[18];
-		byte[] zerobitsbytes = new byte[10];
-		byte[] peerIdbytes = new byte[4];
-		bytearray.get(headerbytes, 0, headerbytes.length);
-		bytearray.get(zerobitsbytes, 0, zerobitsbytes.length);
-		bytearray.get(peerIdbytes, 0, peerIdbytes.length);
-		String headerString = new String(headerbytes);
-		String zerobitString = new String(zerobitsbytes);
-		String peerIdString = new String(peerIdbytes);
-		int peerIdInt = Integer.parseInt(peerIdString);
-
-		this.otherPeerID = peerIdInt;
-	}
-
 	void sendBitfieldMessage() {
 		Bitfield.constructBitfieldMessage(Bitfield.getBitfieldMessagePayload());
 	}
@@ -156,23 +140,5 @@ public class Client extends Thread {
 
 	public void chokePeer() {
 		throw new UnsupportedOperationException();
-	}
-
-	public void handleBitfieldMessage(byte[] bitfieldMessage) {
-		BitSet peerBitfield = Bitfield.byteArrayToBitfield(ActualMessageHandler.extractPayload(bitfieldMessage));
-		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
-		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
-			sendMessage(InterestHandler.GetInterestMessage());
-		}
-	}
-
-	public void handleUnchokeMessage(byte[] unchokeMessage) {
-		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
-			byte[] requestMessage;
-
-			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
-
-			requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
-		}
 	}
 }

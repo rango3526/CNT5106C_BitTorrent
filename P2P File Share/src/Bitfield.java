@@ -75,16 +75,21 @@ public class Bitfield {
     }
 
     // does this client need at least 1 piece from the peer with peerID?
-    public static boolean clientNeedsPiecesFromPeer(int peerID) { 
+    public static boolean clientNeedsPiecesFromPeer(int otherPeerID) { 
         throw new UnsupportedOperationException();
     }
 
-    public static int getFirstPieceIndexNeedFromPeer(int peerID) {
+    public static int getFirstPieceIndexNeedFromPeer(int otherPeerID) {
         throw new UnsupportedOperationException();
     }
 
-    public static void receivedBitfieldMessage(int peerID, byte[] msgPayload) {
-
+    public static void receivedBitfieldMessage(int otherPeerID, byte[] msgPayload) {
+        BitSet peerBitfield = Bitfield.byteArrayToBitfield(msgPayload);
+		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
+		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
+			// sendMessage(InterestHandler.GetInterestMessage());
+            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.GetInterestMessage());
+		}
     }
 
     public static byte[] constructBitfieldMessage(byte[] bitfield) {
