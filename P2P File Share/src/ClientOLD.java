@@ -152,7 +152,7 @@ public class ClientOLD {
 		BitSet peerBitfield = Bitfield.byteArrayToBitfield(ActualMessageHandler.extractPayload(bitfieldMessage));
 		Bitfield.setPeerBitfield(peerID, peerBitfield);
 		if (Bitfield.clientNeedsPiecesFromPeer(peerID)) {
-			sendMessage(InterestHandler.GetInterestMessage());
+			sendMessage(InterestHandler.getInterestMessage());
 		}
 	}
 

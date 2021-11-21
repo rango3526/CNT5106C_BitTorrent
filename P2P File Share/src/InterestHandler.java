@@ -7,12 +7,12 @@ public class InterestHandler {
     // TODO: David
     public static final int TYPE = 2;
 
-    public static byte [] GetInterestMessage() {
+    public static byte [] getInterestMessage() {
         // return byte array of correct format
         throw new UnsupportedOperationException();
     }
 
-    public static List<Integer> GetNonInterestedPeers() {
+    public static List<Integer> getNonInterestedPeers() {
         throw new UnsupportedOperationException();
     }
 

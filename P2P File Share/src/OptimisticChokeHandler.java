@@ -5,12 +5,12 @@ public class OptimisticChokeHandler {
     public static void UnchokeRandomNeighbor() {
         List<Integer> eligibleNeighbors;
 
-        eligibleNeighbors = ChokeHandler.GetChokedNeighbors();
-        eligibleNeighbors.removeAll(InterestHandler.GetNonInterestedPeers());
+        eligibleNeighbors = ChokeHandler.getChokedNeighbors();
+        eligibleNeighbors.removeAll(InterestHandler.getNonInterestedPeers());
 
         Random r = new Random();
         int randomEligibleNeighborIndex = r.nextInt(eligibleNeighbors.size());
 
-        PeerProcess.UnchokePeer(eligibleNeighbors.get(randomEligibleNeighborIndex));
+        PeerProcess.unchokePeer(eligibleNeighbors.get(randomEligibleNeighborIndex));
     }
 }

@@ -1,6 +1,6 @@
 public class PieceHandler {
     private static void receivedPiece(int pieceIndex) {
-        PeerProcess.BroadcastHaveMessage(pieceIndex);
+        PeerProcess.broadcastHaveMessage(pieceIndex);
     }
 
     public static void receivedPieceMessage(int peerID, byte[] msgPayload) {

@@ -88,7 +88,7 @@ public class Bitfield {
 		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
 		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
 			// sendMessage(InterestHandler.GetInterestMessage());
-            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.GetInterestMessage());
+            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.getInterestMessage());
 		}
     }
 

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class ChokeHandler {
-	public static List<Integer> DeterminePreferredNeighbors() {
+	public static List<Integer> determinePreferredNeighbors() {
 		List<PeerInfoDownloadSpeed> peerDownloadSpeeds = new ArrayList<PeerInfoDownloadSpeed>();
 		for (int peerID : PeerProcess.getPeerIDList()) {
 			peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.getDownloadRateOfPeer(peerID)));
@@ -19,7 +19,7 @@ public class ChokeHandler {
 		return peerIDs;
 	}
 
-	public static List<Integer> GetChokedNeighbors() {
+	public static List<Integer> getChokedNeighbors() {
 		throw new UnsupportedOperationException();
 	}
 
