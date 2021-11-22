@@ -7,7 +7,7 @@ public class Handshake {
 	private final static String header = "P2PFILESHARINGPROJ";
     private final static String bits = "0000000000";
 
-	public static byte[] getHandshakeMessage(int selfClientID) {
+	public static byte[] constructHandshakeMessage(int selfClientID) {
 		return (header + bits + selfClientID).getBytes();
 	}
 

@@ -1,0 +1,18 @@
+"filename", "language", "Java", "comment", "blank", "total"
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\ActualMessageHandler.java", "Java", 67, 4, 5, 76
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\Bitfield.java", "Java", 74, 3, 23, 100
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\ChokeHandler.java", "Java", 60, 0, 19, 79
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\Client.java", "Java", 123, 5, 20, 148
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\ConfigReader.java", "Java", 178, 17, 19, 214
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\FileHandler.java", "Java", 13, 0, 5, 18
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\Handshake.java", "Java", 22, 1, 7, 30
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\HaveHandler.java", "Java", 27, 2, 7, 36
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\InterestHandler.java", "Java", 26, 1, 8, 35
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\Message.java", "Java", 26, 0, 6, 32
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\OptimisticChokeHandler.java", "Java", 12, 0, 5, 17
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\PeerProcess.java", "Java", 61, 0, 14, 75
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\PieceHandler.java", "Java", 16, 0, 4, 20
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\RequestHandler.java", "Java", 28, 14, 10, 52
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\Server.java", "Java", 23, 0, 4, 27
+"c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\StartRemotePeers.java", "Java", 87, 31, 33, 151
+"Total", "-", 843, 78, 189, 1110

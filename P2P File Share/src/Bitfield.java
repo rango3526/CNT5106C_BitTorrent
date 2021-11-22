@@ -88,8 +88,16 @@ public class Bitfield {
 		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
 		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
 			// sendMessage(InterestHandler.GetInterestMessage());
-            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.getInterestMessage());
+            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(true));
 		}
+    }
+
+    public static void selfStartsWithFile() {
+        int totalPieceAmt = ConfigReader.getFileSize() / ConfigReader.getPieceSize();
+
+        for (int i = 0; i < totalPieceAmt; i++) {
+            selfReceivedPiece(i);
+        }
     }
 
     public static byte[] constructBitfieldMessage(byte[] bitfield) {

@@ -33,12 +33,12 @@ public class Client extends Thread {
 
 			try {
 				if (shouldInitiateHandshake) {
-					sendMessage(Handshake.getHandshakeMessage(selfClientID));
+					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
 					// TODO: make sure this looks right
 				} else {
 					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
-					sendMessage(Handshake.getHandshakeMessage(selfClientID));
+					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 				}
 
 				while (true) {
@@ -77,16 +77,16 @@ public class Client extends Thread {
 
 		switch (messageType) {
 		case 0:
-			ChokeHandler.receivedChokeMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
+			ChokeHandler.receivedChokeMessage(otherPeerID);
 			break;
 		case 1:
-			ChokeHandler.receivedUnchokeMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
+			ChokeHandler.receivedUnchokeMessage(otherPeerID);
 			break;
 		case 2:
-			InterestHandler.receivedInterestedMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
+			InterestHandler.receivedInterestedMessage(otherPeerID);
 			break;
 		case 3:
-			InterestHandler.receivedUninterestedMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
+			InterestHandler.receivedUninterestedMessage(otherPeerID);
 			break;
 		case 4:
 			HaveHandler.receivedHaveMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
@@ -135,10 +135,14 @@ public class Client extends Thread {
 	}
 
 	public void unchokePeer() {
-		throw new UnsupportedOperationException();
+		byte[] unchokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, false);
+		ChokeHandler.unchokePeer(otherPeerID);
+		sendMessage(unchokeMsg);
 	}
 
 	public void chokePeer() {
-		throw new UnsupportedOperationException();
+		byte[] chokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, true);
+		ChokeHandler.chokePeer(otherPeerID);
+		sendMessage(chokeMsg);
 	}
 }

@@ -4,10 +4,6 @@ import java.nio.ByteBuffer;
 public class HaveHandler {
     public static final int TYPE = 4;
 
-    public HaveHandler() {
-
-    }
-
     public static byte[] generateHaveMessage(int pieceIndex) {
         // TODO: Ranger, check if little-endian vs big-endian
         byte[] pieceByteArray = BigInteger.valueOf(pieceIndex).toByteArray();

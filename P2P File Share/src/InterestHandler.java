@@ -1,26 +1,34 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 // Contains functions for interested and not interested signals
 
 public class InterestHandler {
-    // TODO: David
-    public static final int TYPE = 2;
+    static List<Integer> interestedPeers = new ArrayList<Integer>();
+    static List<Integer> uninterestedPeers = new ArrayList<Integer>();
 
-    public static byte [] getInterestMessage() {
-        // return byte array of correct format
+    public static byte [] constructInterestMessage(boolean interested) {
         throw new UnsupportedOperationException();
     }
 
-    public static List<Integer> getNonInterestedPeers() {
-        throw new UnsupportedOperationException();
+    public static List<Integer> getUninterestedPeers() {
+        return uninterestedPeers;
     }
 
-    public static void receivedInterestedMessage(int fromPeerID, byte[] msgPayload) {
-        throw new UnsupportedOperationException();
+    public static List<Integer> getInterestedPeers() {
+        return interestedPeers;
     }
 
-    public static void receivedUninterestedMessage(int fromPeerID, byte[] msgPayload) {
-        throw new UnsupportedOperationException();
+    public static void receivedInterestedMessage(int fromPeerID) {
+        interestedPeers.add(fromPeerID);
+        if (uninterestedPeers.contains(fromPeerID))
+            uninterestedPeers.remove(Integer.valueOf(fromPeerID));
+    }
+
+    public static void receivedUninterestedMessage(int fromPeerID) {
+        uninterestedPeers.add(fromPeerID);
+        if (interestedPeers.contains(fromPeerID))
+            interestedPeers.remove(Integer.valueOf(fromPeerID));
     }
 }

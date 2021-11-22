@@ -1,6 +1,10 @@
 import java.util.*;
 
 public class ChokeHandler {
+	static List<Integer> clientIsChokedBy = new ArrayList<Integer>();
+	static List<Integer> neighborsChokedByClient = new ArrayList<Integer>();
+
+
 	public static List<Integer> determinePreferredNeighbors() {
 		List<PeerInfoDownloadSpeed> peerDownloadSpeeds = new ArrayList<PeerInfoDownloadSpeed>();
 		for (int peerID : PeerProcess.getPeerIDList()) {
@@ -20,19 +24,23 @@ public class ChokeHandler {
 	}
 
 	public static List<Integer> getChokedNeighbors() {
-		throw new UnsupportedOperationException();
+		return neighborsChokedByClient;
 	}
 
-	public static void receivedChokeMessage(int otherPeerID, byte[] msgPayload) {
-		throw new UnsupportedOperationException();
+	public static void receivedChokeMessage(int otherPeerID) {
+		clientIsChokedBy.add(otherPeerID);
 	}
 
-	public static void receivedUnchokeMessage(int otherPeerID, byte[] msgPayload) {
+	public static void receivedUnchokeMessage(int otherPeerID) {
 		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
 			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
 			byte[] requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
 
 			PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
+		}
+
+		if (clientIsChokedBy.contains(otherPeerID)) {
+			clientIsChokedBy.remove(Integer.valueOf(otherPeerID));
 		}
 	}
 
@@ -49,4 +57,20 @@ public class ChokeHandler {
 	public static byte[] constructChokeMessage(int peerID, boolean choke) { // if choke is false, then unchoke
         throw new UnsupportedOperationException();
     }
+
+	public static boolean chokePeer(int peerID) {
+		if (neighborsChokedByClient.contains(peerID))
+			return false;
+		
+		neighborsChokedByClient.add(peerID);
+		return true;
+	}
+
+	public static boolean unchokePeer(int peerID) {
+		if (!neighborsChokedByClient.contains(peerID))
+			return false;
+		
+		neighborsChokedByClient.remove(Integer.valueOf(peerID));
+		return true;
+	}
 }
