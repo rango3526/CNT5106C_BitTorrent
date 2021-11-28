@@ -30,6 +30,7 @@ public class HaveHandler {
     }
 
     public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
-        throw new UnsupportedOperationException();
+        return ActualMessageHandler.addHeader(pieceIndexByteArray, Message.HAVE);
+    	//throw new UnsupportedOperationException();
     }
 }
