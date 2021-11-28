@@ -100,8 +100,15 @@ public class Bitfield {
         }
     }
 
-    public static byte[] constructBitfieldMessage(byte[] bitfield) {
+    public static byte[] constructBitfieldMessage(byte[] bitfield) 
+    {
         // this one is just adding the header (length + message type) to the payload (payload is just the bitfield)
-        throw new UnsupportedOperationException();
+		/*
+		 * int lengthOfBitfield = bitfield.length; byte [] newBitfieldLength =
+		 * ActualMessageHandler.convertIntToBytes(lengthOfBitfield); bitfield =
+		 * ActualMessageHandler.addHeader(newBitfieldLength, Message.BITFIELD);
+		 */
+        //throw new UnsupportedOperationException();
+    	return ActualMessageHandler.addHeader(bitfield, Message.BITFIELD);
     }
 }
