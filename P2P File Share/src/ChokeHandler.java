@@ -55,7 +55,16 @@ public class ChokeHandler {
 	}
 
 	public static byte[] constructChokeMessage(int peerID, boolean choke) { // if choke is false, then unchoke
-        throw new UnsupportedOperationException();
+		byte [] message = null;
+		byte [] chokeMessage = null;
+		if(choke = false) {
+        	unchokePeer(peerID);
+        }
+        else {
+        	chokeMessage = ActualMessageHandler.addHeader(message, Message.CHOKE);
+        }
+		return chokeMessage;
+		//throw new UnsupportedOperationException();
     }
 
 	public static boolean chokePeer(int peerID) {
