@@ -9,7 +9,14 @@ public class InterestHandler {
     static List<Integer> uninterestedPeers = new ArrayList<Integer>();
 
     public static byte [] constructInterestMessage(boolean interested) {
-        throw new UnsupportedOperationException();
+    	byte [] emptyByte = new byte[0];
+    	if(interested = true) {
+    		return ActualMessageHandler.addHeader(emptyByte, Message.INTERESTED);
+    	}
+    	else{
+    		return ActualMessageHandler.addHeader(emptyByte, Message.UNINTERESTED);
+    	}
+        //throw new UnsupportedOperationException();
     }
 
     public static List<Integer> getUninterestedPeers() {
