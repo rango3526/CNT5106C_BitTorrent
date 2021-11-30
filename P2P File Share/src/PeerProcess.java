@@ -15,6 +15,7 @@ public class PeerProcess {
         Bitfield.init(selfClientID);
         startServer();
         connectToPeers();
+        Logger.initializeLogger(selfClientID);
     }
 
     public static void connectToPeers() {
