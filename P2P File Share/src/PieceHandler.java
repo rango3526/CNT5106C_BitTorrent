@@ -11,6 +11,10 @@ public class PieceHandler {
         FileHandler.addPiece(pieceIndex, getPieceBytesFromPiecePayload(msgPayload));
         Bitfield.selfReceivedPiece(pieceIndex);
         PeerProcess.broadcastHaveMessage(pieceIndex);
+
+        if (RequestHandler.clientNeedsSomePieceFromPeer(peerID)) {
+            PeerProcess.sendMessageToPeer(peerID, RequestHandler.constructRequestMessage(peerID));
+        }
     }
 
     public static synchronized byte[] generatePieceMessage(int pieceIndex) {
@@ -26,11 +30,16 @@ public class PieceHandler {
             outputStream.write(pieceBytes);
     
             byte[] fullPayload = outputStream.toByteArray();
-            return ActualMessageHandler.addHeader(fullPayload, Message.PIECE);
+            return ActualMessageHandler.addHeader(fullPayload, ActualMessageHandler.PIECE);
         }
         catch (IOException exception) {
             throw new RuntimeException("IO Exception in constructPieceMessage\n" + exception.getMessage());
         }
+    }
+
+    public static byte[] constructPieceMessage(int pieceIndex) {
+        byte[] pieceBytes = FileHandler.GetFilePiece(pieceIndex);
+        return constructPieceMessage(pieceIndex, pieceBytes);
     }
 
     public static int getPieceIndexFromPiecePayload(byte[] pieceMsgPayload) {

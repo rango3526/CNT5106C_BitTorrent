@@ -11,10 +11,10 @@ public class InterestHandler {
     public static byte [] constructInterestMessage(boolean interested) {
     	byte [] emptyByte = new byte[0];
     	if(interested) {
-    		return ActualMessageHandler.addHeader(emptyByte, Message.INTERESTED);
+    		return ActualMessageHandler.addHeader(emptyByte, ActualMessageHandler.INTERESTED);
     	}
     	else{
-    		return ActualMessageHandler.addHeader(emptyByte, Message.UNINTERESTED);
+    		return ActualMessageHandler.addHeader(emptyByte, ActualMessageHandler.UNINTERESTED);
     	}
     }
 

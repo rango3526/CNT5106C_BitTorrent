@@ -4,25 +4,6 @@ public class ChokeHandler {
 	volatile static List<Integer> clientIsChokedBy = new ArrayList<Integer>();
 	volatile static List<Integer> neighborsChokedByClient = new ArrayList<Integer>();
 
-
-	public static List<Integer> determinePreferredNeighbors() {
-		List<PeerInfoDownloadSpeed> peerDownloadSpeeds = new ArrayList<PeerInfoDownloadSpeed>();
-		for (int peerID : PeerProcess.getPeerIDList()) {
-			peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.getDownloadRateOfPeer(peerID)));
-		}
-		peerDownloadSpeeds.sort((a, b) -> Double.compare(b.downloadRate, a.downloadRate));
-
-		List<PeerInfoDownloadSpeed> preferredNeighbors = peerDownloadSpeeds.subList(0,
-				ConfigReader.getNumPreferredNeighbors());
-
-		List<Integer> peerIDs = new ArrayList<>();
-		for (PeerInfoDownloadSpeed pids : preferredNeighbors) {
-			peerIDs.add(pids.peerID);
-		}
-
-		return peerIDs;
-	}
-
 	public static synchronized List<Integer> getChokedNeighbors() {
 		return neighborsChokedByClient;
 	}
@@ -35,26 +16,14 @@ public class ChokeHandler {
 	}
 
 	public static synchronized void receivedUnchokeMessage(int otherPeerID) {
-		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
-			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
-			byte[] requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
-			
+		if (RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)) {
+			byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(otherPeerID);
 			PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
 		}
 		
 		if (clientIsChokedBy.contains(otherPeerID)) {
 			Logger.logUnchokedBy(otherPeerID);
 			clientIsChokedBy.remove(Integer.valueOf(otherPeerID));
-		}
-	}
-
-	static class PeerInfoDownloadSpeed {
-		int peerID;
-		double downloadRate;
-
-		PeerInfoDownloadSpeed(int peerID, double downloadRate) {
-			this.peerID = peerID;
-			this.downloadRate = downloadRate;
 		}
 	}
 
@@ -65,7 +34,7 @@ public class ChokeHandler {
         	unchokePeer(peerID);
         }
         else {
-        	chokeMessage = ActualMessageHandler.addHeader(message, Message.CHOKE);
+        	chokeMessage = ActualMessageHandler.addHeader(message, ActualMessageHandler.CHOKE);
         }
 		return chokeMessage;
 		//throw new UnsupportedOperationException();

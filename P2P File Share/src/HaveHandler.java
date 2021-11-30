@@ -26,9 +26,12 @@ public class HaveHandler {
         int haveIndex = haveMessagePayloadToPieceIndex(msgPayload);
         Logger.logReceivedHaveMessage(fromPeerID, haveIndex);
         Bitfield.peerReceivedPiece(fromPeerID, haveIndex);
+
+        // send interested / non-interested message
+        PeerProcess.sendMessageToPeer(fromPeerID, InterestHandler.constructInterestMessage(RequestHandler.clientNeedsSomePieceFromPeer(fromPeerID)));
     }
 
     public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
-        return ActualMessageHandler.addHeader(pieceIndexByteArray, Message.HAVE);
+        return ActualMessageHandler.addHeader(pieceIndexByteArray, ActualMessageHandler.HAVE);
     }
 }

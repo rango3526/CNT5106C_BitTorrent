@@ -11,12 +11,19 @@ public class PeerProcess {
     static volatile ConcurrentHashMap<Integer, Client> allClients = new ConcurrentHashMap<>();
     static volatile int selfClientID = -1;
 
+    static volatile OptimisticUnchokeHandler ouh = null;
+    static volatile FindPreferredNeighbors fpn = null;
+
     public static void main(String args[]) {
         selfClientID = Integer.parseInt(args[0]);
         Logger.initializeLogger(selfClientID);
         Bitfield.init(selfClientID);
         startServer();
         connectToPeers();
+        ouh = new OptimisticUnchokeHandler();
+        ouh.start();
+        fpn = new FindPreferredNeighbors();
+        fpn.start();
     }
 
     public static void connectToPeers() {
@@ -53,6 +60,17 @@ public class PeerProcess {
     public static synchronized void chokePeer(int peerID) {
         allClients.get(peerID).chokePeer();
     }
+
+    public static synchronized void setPreferredNeighbors(List<Integer> preferredNeighbors) {
+		List<Integer> peerIDList = getPeerIDList();
+
+        for (Integer peerID : peerIDList) {
+            if (preferredNeighbors.contains(peerID) && ChokeHandler.getChokedNeighbors().contains(peerID))
+                unchokePeer(peerID);
+            else if (peerID != OptimisticUnchokeHandler.getOptimisticallyUnchokedNeighbor())
+                chokePeer(peerID);
+        }
+	}
 
     public static void startServer() {
         try {

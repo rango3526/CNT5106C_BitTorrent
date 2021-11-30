@@ -83,22 +83,16 @@ public class Bitfield {
         return getSelfBitfieldAsByteArray();
     }
 
-    // does this client need at least 1 piece from the peer with peerID?
-    public static boolean clientNeedsPiecesFromPeer(int otherPeerID) { 
-        throw new UnsupportedOperationException();
-    }
-
-    public static int getFirstPieceIndexNeedFromPeer(int otherPeerID) {
-        throw new UnsupportedOperationException();
+    public static boolean clientHasThisPiece(int pieceIndex) {
+        return getSelfBitfield().get(pieceIndex);
     }
 
     public static void receivedBitfieldMessage(int otherPeerID, byte[] msgPayload) {
         BitSet peerBitfield = Bitfield.byteArrayToBitfield(msgPayload);
 		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
-		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
-			// sendMessage(InterestHandler.GetInterestMessage());
-            PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(true));
-		}
+		
+        // send interested / non-interested message
+        PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)));
     }
 
     public static void selfStartsWithFile() {
@@ -114,10 +108,10 @@ public class Bitfield {
 		/*
 		 * int lengthOfBitfield = bitfield.length; byte [] newBitfieldLength =
 		 * ActualMessageHandler.convertIntToBytes(lengthOfBitfield); bitfield =
-		 * ActualMessageHandler.addHeader(newBitfieldLength, Message.BITFIELD);
+		 * ActualMessageHandler.addHeader(newBitfieldLength, ActualMessageHandler.BITFIELD);
 		 */
         //throw new UnsupportedOperationException();
-    	return ActualMessageHandler.addHeader(bitfield, Message.BITFIELD);
+    	return ActualMessageHandler.addHeader(bitfield, ActualMessageHandler.BITFIELD);
     }
 
     public static int getNumberOfPiecesClientHas() {
