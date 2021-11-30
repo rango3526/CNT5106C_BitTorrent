@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerProcess {
     static volatile ConcurrentHashMap<Integer, Client> allClients = new ConcurrentHashMap<>();
-    static int selfClientID = -1;
+    static volatile int selfClientID = -1;
 
     public static void main(String args[]) {
         selfClientID = Integer.parseInt(args[0]);
@@ -38,19 +38,19 @@ public class PeerProcess {
         }
     }
 
-    public static List<Integer> getPeerIDList() {
+    public static synchronized List<Integer> getPeerIDList() {
         return Arrays.asList(allClients.keySet().toArray(new Integer[0]));
     }
 
-    public static double getDownloadRateOfPeer(int peerID) {
+    public static synchronized double getDownloadRateOfPeer(int peerID) {
         return allClients.get(peerID).getDownloadRateInKBps();
     }
 
-    public static void unchokePeer(int peerID) {
+    public static synchronized void unchokePeer(int peerID) {
         allClients.get(peerID).unchokePeer();
     }
 
-    public static void chokePeer(int peerID) {
+    public static synchronized void chokePeer(int peerID) {
         allClients.get(peerID).chokePeer();
     }
 
@@ -63,11 +63,11 @@ public class PeerProcess {
         }
     }
 
-    public static void connectionFromNewPeer(int peerID, Client c) {
+    public static synchronized void connectionFromNewPeer(int peerID, Client c) {
         allClients.put(peerID, c);
     }
 
-    public static void broadcastHaveMessage(int pieceIndex) {
+    public static synchronized void broadcastHaveMessage(int pieceIndex) {
         byte[] haveMessage = HaveHandler.generateHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
@@ -75,7 +75,7 @@ public class PeerProcess {
         }
     }
 
-    public static void sendMessageToPeer(int peerID, byte[] message) {
+    public static synchronized void sendMessageToPeer(int peerID, byte[] message) {
         allClients.get(peerID).sendMessage(message);
     }
 }

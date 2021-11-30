@@ -2,7 +2,7 @@ import java.util.*;
 
 public class RequestHandler 
 {
-	static BitSet bitsWeHaveAlreadyRequested;
+	static volatile BitSet bitsWeHaveAlreadyRequested;
 
 	/*
 	 * public static byte[] convertIntToBytes(int pieceIndex) { return new byte[] {
@@ -20,7 +20,7 @@ public class RequestHandler
 	 */
 
 	
-	  public static int findNeededPieceIndex() 
+	  public static synchronized int findNeededPieceIndex() 
 	  { 
 		  BitSet ourBitfield = Bitfield.getSelfBitfield();
 	  
@@ -35,7 +35,7 @@ public class RequestHandler
 	  }
 	 
 	
-	public static byte [] constructRequestMessage(int pieceIndex) 
+	public static synchronized byte[] constructRequestMessage(int pieceIndex) 
 	{
 	    pieceIndex = findNeededPieceIndex();
 
@@ -45,7 +45,7 @@ public class RequestHandler
 	    return message;
 	}
 
-    public static void receivedRequestMessage(int peerID, byte[] msgPayload) 
+    public static synchronized void receivedRequestMessage(int peerID, byte[] msgPayload) 
     {
         throw new UnsupportedOperationException();
     }

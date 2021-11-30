@@ -6,17 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FileHandler {
-    static HashMap<Integer, byte[]> pieceMap = new HashMap<Integer, byte[]>();
-    static String filePath = "../FileToShare/" + ConfigReader.getFileName();
+    volatile static ConcurrentHashMap<Integer, byte[]> pieceMap = new ConcurrentHashMap<>();
+    static final String FILE_PATH = "../FileToShare/" + ConfigReader.getFileName();
 
     public static byte[] GetFilePiece(int pieceIndex) {
         return pieceMap.get(pieceIndex);
     }
 
-    public static void InitializePieceMapFromCompleteFile() {
-        File file = new File(filePath);
+    public static synchronized void initializePieceMapFromCompleteFile() {
+        File file = new File(FILE_PATH);
         if (!file.exists()) {
             System.out.println("This system is not starting with a file.");
             return;
@@ -43,11 +44,11 @@ public class FileHandler {
         }
     }
 
-    public static boolean combinePiecesIntoCompleteFile() {
+    public static synchronized boolean combinePiecesIntoCompleteFile() {
         FileOutputStream fileOutputStream = null;
 
         try {
-            fileOutputStream = new FileOutputStream(new File(filePath));
+            fileOutputStream = new FileOutputStream(new File(FILE_PATH));
 
             int maxIndex = ConfigReader.getFileSize() / ConfigReader.getPieceSize();
             
@@ -75,7 +76,7 @@ public class FileHandler {
         return true;
     }
 
-    public static void addPiece(int pieceIndex, byte[] piece) {
+    public static synchronized void addPiece(int pieceIndex, byte[] piece) {
         pieceMap.put(pieceIndex, piece);
     }
 }

@@ -2,8 +2,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 public class HaveHandler {
-    public static final int TYPE = 4;
-
     public static byte[] generateHaveMessage(int pieceIndex) {
         // TODO: Ranger, check if little-endian vs big-endian
         byte[] pieceByteArray = BigInteger.valueOf(pieceIndex).toByteArray();
@@ -24,7 +22,7 @@ public class HaveHandler {
         return wrappedBB.getInt();
     }
 
-    public static void receivedHaveMessage(int fromPeerID, byte[] msgPayload) {
+    public static synchronized void receivedHaveMessage(int fromPeerID, byte[] msgPayload) {
         int haveIndex = haveMessagePayloadToPieceIndex(msgPayload);
         Logger.logReceivedHaveMessage(fromPeerID, haveIndex);
         Bitfield.peerReceivedPiece(fromPeerID, haveIndex);
@@ -32,6 +30,5 @@ public class HaveHandler {
 
     public static byte[] constructHaveMessage(byte[] pieceIndexByteArray) {
         return ActualMessageHandler.addHeader(pieceIndexByteArray, Message.HAVE);
-    	//throw new UnsupportedOperationException();
     }
 }

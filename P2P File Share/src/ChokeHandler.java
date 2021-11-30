@@ -1,8 +1,8 @@
 import java.util.*;
 
 public class ChokeHandler {
-	static List<Integer> clientIsChokedBy = new ArrayList<Integer>();
-	static List<Integer> neighborsChokedByClient = new ArrayList<Integer>();
+	volatile static List<Integer> clientIsChokedBy = new ArrayList<Integer>();
+	volatile static List<Integer> neighborsChokedByClient = new ArrayList<Integer>();
 
 
 	public static List<Integer> determinePreferredNeighbors() {
@@ -23,18 +23,18 @@ public class ChokeHandler {
 		return peerIDs;
 	}
 
-	public static List<Integer> getChokedNeighbors() {
+	public static synchronized List<Integer> getChokedNeighbors() {
 		return neighborsChokedByClient;
 	}
 
-	public static void receivedChokeMessage(int otherPeerID) {
+	public static synchronized void receivedChokeMessage(int otherPeerID) {
 		if (!clientIsChokedBy.contains(otherPeerID)) {
 			Logger.logChokedBy(otherPeerID);
 			clientIsChokedBy.add(otherPeerID);
 		}
 	}
 
-	public static void receivedUnchokeMessage(int otherPeerID) {
+	public static synchronized void receivedUnchokeMessage(int otherPeerID) {
 		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
 			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
 			byte[] requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
@@ -71,7 +71,7 @@ public class ChokeHandler {
 		//throw new UnsupportedOperationException();
     }
 
-	public static boolean chokePeer(int peerID) {
+	public static synchronized boolean chokePeer(int peerID) {
 		if (neighborsChokedByClient.contains(peerID))
 			return false;
 		
@@ -79,7 +79,7 @@ public class ChokeHandler {
 		return true;
 	}
 
-	public static boolean unchokePeer(int peerID) {
+	public static synchronized boolean unchokePeer(int peerID) {
 		if (!neighborsChokedByClient.contains(peerID))
 			return false;
 		

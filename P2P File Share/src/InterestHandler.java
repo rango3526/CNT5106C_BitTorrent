@@ -5,36 +5,35 @@ import java.util.List;
 // Contains functions for interested and not interested signals
 
 public class InterestHandler {
-    static List<Integer> interestedPeers = new ArrayList<Integer>();
-    static List<Integer> uninterestedPeers = new ArrayList<Integer>();
+    static volatile List<Integer> interestedPeers = new ArrayList<>();
+    static volatile List<Integer> uninterestedPeers = new ArrayList<>();
 
     public static byte [] constructInterestMessage(boolean interested) {
     	byte [] emptyByte = new byte[0];
-    	if(interested = true) {
+    	if(interested) {
     		return ActualMessageHandler.addHeader(emptyByte, Message.INTERESTED);
     	}
     	else{
     		return ActualMessageHandler.addHeader(emptyByte, Message.UNINTERESTED);
     	}
-        //throw new UnsupportedOperationException();
     }
 
-    public static List<Integer> getUninterestedPeers() {
+    public static synchronized List<Integer> getUninterestedPeers() {
         return uninterestedPeers;
     }
 
-    public static List<Integer> getInterestedPeers() {
+    public static synchronized List<Integer> getInterestedPeers() {
         return interestedPeers;
     }
 
-    public static void receivedInterestedMessage(int fromPeerID) {
+    public static synchronized void receivedInterestedMessage(int fromPeerID) {
         Logger.logInterestedMessageReceived(fromPeerID);
         interestedPeers.add(fromPeerID);
         if (uninterestedPeers.contains(fromPeerID))
             uninterestedPeers.remove(Integer.valueOf(fromPeerID));
     }
 
-    public static void receivedUninterestedMessage(int fromPeerID) {
+    public static synchronized void receivedUninterestedMessage(int fromPeerID) {
         Logger.logNotInterestedMessageReceived(fromPeerID);
         uninterestedPeers.add(fromPeerID);
         if (interestedPeers.contains(fromPeerID))

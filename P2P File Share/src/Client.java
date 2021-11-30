@@ -1,20 +1,19 @@
 import java.net.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.io.*;
 
 public class Client extends Thread {
-	Socket connection; // socket connect to the server
-	ObjectOutputStream out; // stream write to the socket
-	ObjectInputStream in; // stream read from the socket
-	byte[] messageToSend; // message send to the server
-	byte[] messageFromServer; // capitalized message read from the server
+	volatile Socket connection; // socket connect to the server
+	volatile ObjectOutputStream out; // stream write to the socket
+	volatile ObjectInputStream in; // stream read from the socket
 
-	int selfClientID = -1; // This own client's ID
-	int otherPeerID = -1; // ID of peer we're connecting to
+	volatile int selfClientID = -1; // This own client's ID
+	volatile int otherPeerID = -1; // ID of peer we're connecting to
 
-	long cumulativeDownloadTimeNanoseconds = 0;
-	long cumulativeBytesDownloaded = 0;
+	volatile AtomicLong cumulativeDownloadTimeNanoseconds = new AtomicLong(0);
+	volatile AtomicLong cumulativeBytesDownloaded = new AtomicLong(0);
 
-	boolean shouldInitiateHandshake = false;
+	volatile boolean shouldInitiateHandshake = false;
 
 	public Client(Socket connection, boolean shouldInitiateHandshake) {
 		this.selfClientID = PeerProcess.selfClientID;
@@ -74,7 +73,7 @@ public class Client extends Thread {
 		}
 	}
 
-	void handleAnyMessage(byte[] msg) {
+	synchronized void handleAnyMessage(byte[] msg) {
 		int messageType = ActualMessageHandler.getMsgType(msg);
 
 		switch (messageType) {
@@ -112,37 +111,36 @@ public class Client extends Thread {
 		byte[] obj = (byte[]) in.readObject();
 		long endTime = System.nanoTime();
 
-		cumulativeDownloadTimeNanoseconds += endTime - startTime;
-		cumulativeBytesDownloaded += obj.length;
+		cumulativeDownloadTimeNanoseconds = new AtomicLong(cumulativeDownloadTimeNanoseconds.get() + endTime - startTime);
+		cumulativeBytesDownloaded = new AtomicLong(cumulativeBytesDownloaded.get() + obj.length);
 
 		return obj;
 	}
 
-	int getPortFromPeerID(int id) { // use the config file
+	synchronized int getPortFromPeerID(int id) { // use the config file
 		return ConfigReader.getPortFromPeerID(id);
 	}
 
-	String getIPFromPeerID(int id) { // use the config file
+	synchronized String getIPFromPeerID(int id) { // use the config file
 		return ConfigReader.getIPFromPeerID(id).toString();
 	}
 
-	void sendBitfieldMessage() {
+	synchronized void sendBitfieldMessage() {
 		Bitfield.constructBitfieldMessage(Bitfield.getBitfieldMessagePayload());
 	}
 
-	public double getDownloadRateInKBps() { // KiloBytes per second
-		double downloadRate = ((double) cumulativeBytesDownloaded / 1000.0 * 1000000000
-				/ (double) cumulativeDownloadTimeNanoseconds);
-		return downloadRate;
+	public synchronized double getDownloadRateInKBps() { // KiloBytes per second
+		return ((double) cumulativeBytesDownloaded.get() / 1000.0 * 1000000000
+				/ (double) cumulativeDownloadTimeNanoseconds.get());
 	}
 
-	public void unchokePeer() {
+	public synchronized void unchokePeer() {
 		byte[] unchokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, false);
 		ChokeHandler.unchokePeer(otherPeerID);
 		sendMessage(unchokeMsg);
 	}
 
-	public void chokePeer() {
+	public synchronized void chokePeer() {
 		byte[] chokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, true);
 		ChokeHandler.chokePeer(otherPeerID);
 		sendMessage(chokeMsg);

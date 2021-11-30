@@ -1,11 +1,13 @@
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.*;
 
 public class Bitfield {
-    private static int maxPieceAmt = -1;
-    private static int curPieceNumPossessed = 0;
-    private static int selfClientID = -1;
-    private static HashMap<Integer, BitSet> bitfields = new HashMap<Integer, BitSet>();
+    private static volatile int maxPieceAmt = -1;
+    private static volatile AtomicInteger curPieceNumPossessed = new AtomicInteger(0);
+    private static volatile int selfClientID = -1;
+    private static volatile ConcurrentHashMap<Integer, BitSet> bitfields = new ConcurrentHashMap<>();
 
     private static boolean selfStartedWithData = false;
     
@@ -42,9 +44,9 @@ public class Bitfield {
     }
 
     public static void selfReceivedPiece(int pieceIndex) {
-        curPieceNumPossessed += 1;
+        curPieceNumPossessed = new AtomicInteger(curPieceNumPossessed.get() + 1);
         bitfields.get(selfClientID).set(pieceIndex, true);
-        if (!selfStartedWithData && curPieceNumPossessed == maxPieceAmt) {
+        if (!selfStartedWithData && curPieceNumPossessed.get() == maxPieceAmt) {
             FileHandler.combinePiecesIntoCompleteFile();
         }
     }
@@ -119,6 +121,6 @@ public class Bitfield {
     }
 
     public static int getNumberOfPiecesClientHas() {
-        return curPieceNumPossessed;
+        return curPieceNumPossessed.get();
     }
 }

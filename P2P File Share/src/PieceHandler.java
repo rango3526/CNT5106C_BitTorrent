@@ -5,14 +5,15 @@ import java.util.Arrays;
 
 public class PieceHandler {
 
-    public static void receivedPieceMessage(int peerID, byte[] msgPayload) {
+    public static synchronized void receivedPieceMessage(int peerID, byte[] msgPayload) {
         int pieceIndex = getPieceIndexFromPiecePayload(msgPayload);
+        Logger.logPieceDownloadComplete(peerID, pieceIndex, Bitfield.getNumberOfPiecesClientHas() + 1);
         FileHandler.addPiece(pieceIndex, getPieceBytesFromPiecePayload(msgPayload));
         Bitfield.selfReceivedPiece(pieceIndex);
         PeerProcess.broadcastHaveMessage(pieceIndex);
     }
 
-    public static byte[] generatePieceMessage(int pieceIndex) {
+    public static synchronized byte[] generatePieceMessage(int pieceIndex) {
         byte[] filePiece = FileHandler.GetFilePiece(pieceIndex);
         byte[] pieceMessage = constructPieceMessage(pieceIndex, filePiece);
         return pieceMessage;

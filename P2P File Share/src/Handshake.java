@@ -2,13 +2,11 @@ import java.nio.ByteBuffer;
 
 public class Handshake {
 
-	// TODO: David
-
-	private final static String header = "P2PFILESHARINGPROJ";
-    private final static String bits = "0000000000";
+	private static final String HEADER = "P2PFILESHARINGPROJ";
+    private static final String BITS = "0000000000";
 
 	public static byte[] constructHandshakeMessage(int selfClientID) {
-		return (header + bits + selfClientID).getBytes();
+		return (HEADER + BITS + selfClientID).getBytes();
 	}
 
 	public static int receivedHandshakeResponseMessage(byte[] handshakeResponseMessage) {
