@@ -28,12 +28,14 @@ public class InterestHandler {
     }
 
     public static void receivedInterestedMessage(int fromPeerID) {
+        Logger.logInterestedMessageReceived(fromPeerID);
         interestedPeers.add(fromPeerID);
         if (uninterestedPeers.contains(fromPeerID))
             uninterestedPeers.remove(Integer.valueOf(fromPeerID));
     }
 
     public static void receivedUninterestedMessage(int fromPeerID) {
+        Logger.logNotInterestedMessageReceived(fromPeerID);
         uninterestedPeers.add(fromPeerID);
         if (interestedPeers.contains(fromPeerID))
             interestedPeers.remove(Integer.valueOf(fromPeerID));

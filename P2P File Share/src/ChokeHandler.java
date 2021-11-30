@@ -28,18 +28,22 @@ public class ChokeHandler {
 	}
 
 	public static void receivedChokeMessage(int otherPeerID) {
-		clientIsChokedBy.add(otherPeerID);
+		if (!clientIsChokedBy.contains(otherPeerID)) {
+			Logger.logChokedBy(otherPeerID);
+			clientIsChokedBy.add(otherPeerID);
+		}
 	}
 
 	public static void receivedUnchokeMessage(int otherPeerID) {
 		if (Bitfield.clientNeedsPiecesFromPeer(otherPeerID)) {
 			int neededPieceIndex = Bitfield.getFirstPieceIndexNeedFromPeer(otherPeerID);
 			byte[] requestMessage = RequestHandler.constructRequestMessage(neededPieceIndex);
-
+			
 			PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
 		}
-
+		
 		if (clientIsChokedBy.contains(otherPeerID)) {
+			Logger.logUnchokedBy(otherPeerID);
 			clientIsChokedBy.remove(Integer.valueOf(otherPeerID));
 		}
 	}

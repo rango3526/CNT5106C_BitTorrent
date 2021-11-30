@@ -26,6 +26,7 @@ public class HaveHandler {
 
     public static void receivedHaveMessage(int fromPeerID, byte[] msgPayload) {
         int haveIndex = haveMessagePayloadToPieceIndex(msgPayload);
+        Logger.logReceivedHaveMessage(fromPeerID, haveIndex);
         Bitfield.peerReceivedPiece(fromPeerID, haveIndex);
     }
 

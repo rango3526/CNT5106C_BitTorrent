@@ -1,8 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.util.*;
 
 public class Client extends Thread {
 	Socket connection; // socket connect to the server
@@ -21,9 +18,11 @@ public class Client extends Thread {
 
 	public Client(Socket connection, boolean shouldInitiateHandshake) {
 		this.selfClientID = PeerProcess.selfClientID;
+		this.connection = connection;
 		this.shouldInitiateHandshake = shouldInitiateHandshake;
 	}
 
+	@Override
 	public void run() {
 		try {
 			// initialize Input and Output streams
@@ -35,10 +34,12 @@ public class Client extends Thread {
 				if (shouldInitiateHandshake) {
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
+					Logger.logTcpConnectionTo(this.otherPeerID);
 					// TODO: make sure this looks right
 				} else {
 					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
+					Logger.logTcpConnectionFrom(this.otherPeerID);
 				}
 
 				while (true) {

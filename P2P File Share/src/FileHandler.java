@@ -43,8 +43,8 @@ public class FileHandler {
         }
     }
 
-    public static boolean CombinePiecesIntoCompleteFile() {
-        FileOutputStream fileOutputStream;
+    public static boolean combinePiecesIntoCompleteFile() {
+        FileOutputStream fileOutputStream = null;
 
         try {
             fileOutputStream = new FileOutputStream(new File(filePath));
@@ -52,15 +52,26 @@ public class FileHandler {
             int maxIndex = ConfigReader.getFileSize() / ConfigReader.getPieceSize();
             
             for (int i = 0; i < maxIndex; i++) {
-                if (!pieceMap.containsKey(i))
+                if (!pieceMap.containsKey(i)) {
+                    System.out.println("Tried to combine all piece into complete file, but there was a missing piece at index: " + i);
                     return false;
+                }
                 fileOutputStream.write(pieceMap.get(i));
             }
         }
         catch (Exception e) {
             throw new RuntimeException("Something wrong outputting the file\n" + e.getMessage());
         }
+        finally {
+            try {
+                fileOutputStream.close();
+            }
+            catch (IOException e) {
+                throw new RuntimeException("Problem closing file output stream\n" + e.getMessage());
+            }
+        }
 
+        Logger.logFullDownloadComplete();
         return true;
     }
 

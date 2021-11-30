@@ -2,9 +2,12 @@ import java.util.HashMap;
 import java.util.*;
 
 public class Bitfield {
-    private static int pieceAmt = -1;
+    private static int maxPieceAmt = -1;
+    private static int curPieceNumPossessed = 0;
     private static int selfClientID = -1;
     private static HashMap<Integer, BitSet> bitfields = new HashMap<Integer, BitSet>();
+
+    private static boolean selfStartedWithData = false;
     
     private static boolean initialized = false;
 
@@ -22,14 +25,14 @@ public class Bitfield {
     }
 
     private static void calculatePieceAmt() {
-        if (pieceAmt == -1) {
+        if (maxPieceAmt == -1) {
             int fileSize = ConfigReader.getFileSize();
             int pieceSize = ConfigReader.getPieceSize();
     
-            pieceAmt = fileSize / pieceSize;
+            maxPieceAmt = fileSize / pieceSize;
     
             if (fileSize % pieceSize != 0) {
-                pieceAmt += 1;
+                maxPieceAmt += 1;
             }
         }
     }
@@ -39,7 +42,11 @@ public class Bitfield {
     }
 
     public static void selfReceivedPiece(int pieceIndex) {
+        curPieceNumPossessed += 1;
         bitfields.get(selfClientID).set(pieceIndex, true);
+        if (!selfStartedWithData && curPieceNumPossessed == maxPieceAmt) {
+            FileHandler.combinePiecesIntoCompleteFile();
+        }
     }
 
     public static void setPeerBitfield(int peerID, BitSet bitfield) {
@@ -93,9 +100,8 @@ public class Bitfield {
     }
 
     public static void selfStartsWithFile() {
-        int totalPieceAmt = ConfigReader.getFileSize() / ConfigReader.getPieceSize();
-
-        for (int i = 0; i < totalPieceAmt; i++) {
+        selfStartedWithData = true;
+        for (int i = 0; i < maxPieceAmt; i++) {
             selfReceivedPiece(i);
         }
     }
@@ -110,5 +116,9 @@ public class Bitfield {
 		 */
         //throw new UnsupportedOperationException();
     	return ActualMessageHandler.addHeader(bitfield, Message.BITFIELD);
+    }
+
+    public static int getNumberOfPiecesClientHas() {
+        return curPieceNumPossessed;
     }
 }
