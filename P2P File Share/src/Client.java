@@ -40,6 +40,7 @@ public class Client extends Thread {
 					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 					Logger.logTcpConnectionFrom(this.otherPeerID);
+					PeerProcess.connectionFromNewPeer(otherPeerID, this);
 				}
 
 				while (true) {

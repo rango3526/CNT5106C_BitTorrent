@@ -16,7 +16,8 @@ public class Server {
 		ServerSocket listener = new ServerSocket(sPort);
 		try {
 			while(true) {
-				new Client(listener.accept(), false).start();
+				Client c = new Client(listener.accept(), false);
+				c.start();
 				System.out.println("Client connected!");
 			}
 		} finally {
