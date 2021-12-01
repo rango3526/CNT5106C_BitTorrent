@@ -26,11 +26,49 @@ java -classpath ".:jsch-0.1.54.jar:" StartRemotePeers
 To re-copy over (modify path for your own computer):
 scp 'c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\StartRemotePeers.class' 'c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\StartRemotePeers$1.class' 'c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src\StartRemotePeers$PeerInfo.class' rangerchenore@lin114-01.cise.ufl.edu:~
 
+======================================================================================================================================================================================================================================================
+
+For Mac:
+
+Change directory to src:
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src'
+
+Make sure JAVA_HOME points to Java 11:
+export JAVA_HOME=`/usr/libexec/java_home -v 11.0.13`
+
+Make source list:
+find . -name "*.java" > sources.txt
+
+Compile with .jar file:
+javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
+
+Copy the class files over with:
+scp /Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P\ File\ Share/bin/*.class rangerchenore@lin114-01.cise.ufl.edu:~
+
+To copy config and starting image:
+scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/config' rangerchenore@lin114-01.cise.ufl.edu:~ 
+scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/FileToShare' rangerchenore@lin114-01.cise.ufl.edu:~
+
+
+Altogether in one line:
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src' && find . -name "*.java" > sources.txt && javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt && scp /Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P\ File\ Share/bin/*.class rangerchenore@lin114-01.cise.ufl.edu:~ && scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/config' rangerchenore@lin114-01.cise.ufl.edu:~  && scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/FileToShare' rangerchenore@lin114-01.cise.ufl.edu:~
+
+Compile everything without sending over scp:
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src' && export JAVA_HOME=`/usr/libexec/java_home -v 11.0.13` && find . -name "*.java" > sources.txt && javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
+
+Run StartRemotePeers:
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' StartRemotePeers
+
+Run PeerProcess locally:
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' PeerProcess 1001
+
 */
+
+// TODO: Add better debugger log
 
 public class StartRemotePeers {
 
-    private static final String scriptPrefix = "java p2pFileSharing/peerProcess ";
+    private static final String scriptPrefix = "java -cp \".:jsch-0.1.54.jar\" PeerProcess ";
 
     public static class PeerInfo {
 
@@ -63,6 +101,8 @@ public class StartRemotePeers {
 
     public static void main(String[] args) {
 
+        System.out.println("Starting remote peers...");
+
         ArrayList<PeerInfo> peerList = new ArrayList<>();
 
         String ciseUser = "rangerchenore"; // change with your CISE username
@@ -74,13 +114,14 @@ public class StartRemotePeers {
          */
 
         peerList.add(new PeerInfo("1001", "lin114-00.cise.ufl.edu"));
-        // peerList.add(new PeerInfo("2", "lin114-08.cise.ufl.edu"));
-        // peerList.add(new PeerInfo("3", "lin114-09.cise.ufl.edu"));
-        // peerList.add(new PeerInfo("4", "lin114-04.cise.ufl.edu"));
-        // peerList.add(new PeerInfo("5", "lin114-05.cise.ufl.edu"));
+        peerList.add(new PeerInfo("1002", "lin114-01.cise.ufl.edu"));
+        peerList.add(new PeerInfo("1003", "lin114-02.cise.ufl.edu"));
+        peerList.add(new PeerInfo("1004", "lin114-03.cise.ufl.edu"));
+        peerList.add(new PeerInfo("1005", "lin114-04.cise.ufl.edu"));
 
         for (PeerInfo remotePeer : peerList) {
             try {
+                System.out.println("Starting peer: " + remotePeer.peerID);
                 JSch jsch = new JSch();
                 /*
                  * Give the path to your private key. Make sure your public key is already
@@ -88,12 +129,16 @@ public class StartRemotePeers {
                  * use the corressponding method of JSch which accepts a password.
                  */
                 jsch.addIdentity("~/.ssh/id_rsa", "");
+                System.out.println("Getting session...");
                 Session session = jsch.getSession(ciseUser, remotePeer.getHostName(), 22);
+                System.out.println("Session obtained.");
                 Properties config = new Properties();
                 config.put("StrictHostKeyChecking", "no");
                 session.setConfig(config);
 
+                System.out.println("Connecting...");
                 session.connect();
+                System.out.println("Connected.");
 
                 System.out.println("Session to peer# " + remotePeer.getPeerID() + " at " + remotePeer.getHostName());
 
@@ -134,7 +179,7 @@ public class StartRemotePeers {
                         session.disconnect();
                     }
                 }).start();
-
+                System.out.println("Done with peer: " + remotePeer.peerID);
             } catch (JSchException e) {
                 // TODO Auto-generated catch block
                 System.out.println(remotePeer.getPeerID() + " JSchException >:");
@@ -145,6 +190,8 @@ public class StartRemotePeers {
             }
 
         }
+
+        System.out.println("***Finished starting remote peers!");
     }
 
 }

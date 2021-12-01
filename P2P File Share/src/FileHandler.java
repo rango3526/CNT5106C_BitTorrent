@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FileHandler {
     volatile static ConcurrentHashMap<Integer, byte[]> pieceMap = new ConcurrentHashMap<>();
-    static final String FILE_PATH = "../FileToShare/" + ConfigReader.getFileName();
+    public static final String FILE_PATH = "./FileToShare/" + ConfigReader.getFileName();
 
     public static byte[] GetFilePiece(int pieceIndex) {
         return pieceMap.get(pieceIndex);
@@ -27,7 +27,7 @@ public class FileHandler {
             byte[] fileBytes = Files.readAllBytes(file.toPath());
             int pieceSize = ConfigReader.getPieceSize();
 
-            for (int i = 0; i < fileBytes.length + pieceSize; i+= pieceSize) {
+            for (int i = 0; i < fileBytes.length; i+= pieceSize) {
                 int pieceIndex = i/pieceSize;
 
                 int pieceBytesEndIndex = i + pieceSize;

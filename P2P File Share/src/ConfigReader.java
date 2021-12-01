@@ -9,8 +9,8 @@ public class ConfigReader {
     // static String pathToPeerInfoCfg = "C:/Users/Tre' Jeter/Desktop/Java Projects/Projects/Peer-To-Peer Network/src/PeerInfo.cfg";
     // static String pathToCommonCfg = "C:/Users/Tre' Jeter/Desktop/Java Projects/Projects/Peer-To-Peer Network/src/Common.cfg";
 
-    static String pathToPeerInfoCfg = "./P2P File Share/config/PeerInfo.cfg";
-    static String pathToCommonCfg = "./P2P File Share/config/Common.cfg";
+    static String pathToPeerInfoCfg = "./config/PeerInfo.cfg";
+    static String pathToCommonCfg = "./config/Common.cfg";
 
     public static List<Integer> getAllPeerIDs() {
         List<Integer> peerIDList = new ArrayList<>();

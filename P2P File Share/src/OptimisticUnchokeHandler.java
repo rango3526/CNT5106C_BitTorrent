@@ -7,7 +7,7 @@ public class OptimisticUnchokeHandler extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (PeerProcess.isRunning) {
             unchokeRandomNeighbor();
             try {
                 Thread.sleep(ConfigReader.getOptimisticUnchokingInterval()*1000);

@@ -42,7 +42,7 @@ public class Client extends Thread {
 					PeerProcess.connectionFromNewPeer(otherPeerID, this);
 				}
 
-				while (true) {
+				while (PeerProcess.isRunning) {
 					handleAnyMessage(receiveMessage());
 				}
 			} catch (ClassNotFoundException classnot) {
@@ -59,6 +59,7 @@ public class Client extends Thread {
 			} catch (IOException ioException) {
 				System.out.println("Disconnect with Client " + otherPeerID);
 			}
+			System.out.println("Connections to " + otherPeerID + " closed.");
 		}
 	}
 

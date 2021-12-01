@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Server {
 
-	private static final int sPort = 8000;   //The server will be listening on this port number
+	private static final int sPort = 6001;   //The server will be listening on this port number
 	private static int selfClientID = -1;
 
 	public static void startServer(int selfClientID) throws Exception {

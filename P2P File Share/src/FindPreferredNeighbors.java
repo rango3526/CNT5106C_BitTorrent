@@ -6,7 +6,7 @@ public class FindPreferredNeighbors extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (PeerProcess.isRunning) {
             PeerProcess.setPreferredNeighbors(determinePreferredNeighbors());
             try {
                 Thread.sleep(ConfigReader.getUnchokingInterval()*1000);

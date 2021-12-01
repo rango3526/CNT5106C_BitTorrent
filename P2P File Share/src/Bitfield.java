@@ -16,9 +16,11 @@ public class Bitfield {
     public static void init(int selfClientID) {
         if (!initialized) {
             calculatePieceAmt();
+            Bitfield.selfClientID = selfClientID;
             
             List<Integer> allPeerIDs = ConfigReader.getAllPeerIDs();
             for (Integer peerID : allPeerIDs) {
+                System.out.println("Create bitset for peer: " + peerID);
                 bitfields.put(peerID, new BitSet());
             }
             

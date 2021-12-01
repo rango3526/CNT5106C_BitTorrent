@@ -13,33 +13,10 @@ public class Logger {
     private static PrintWriter printWriter;
     private static int clientId;
 
-    // public static Logger getLogger(String peerId) {
-    //     synchronized (Logger.class) {
-    //         if (map.get(peerId) == null) {
-    //             map.put(peerId, new Logger(peerId));
-    //         }
-    //     }
-    //     return map.get(peerId);
-    // }
-
-    // public static Logger getLogger() {
-    //     if (instance == null) {
-    //         instance = new Logger(peerId);
-    //     }
-    //     return instance;
-    // }
-
-    // Creates the directories for logging and initializes the PrintWriter
-    // private Logger(String peerId) {
-    //     try {
-    //         System.out.println("Logger created for peer: " + peerId);
-    //         this.peerId = peerId;
-    //         File file = createLog(peerId);
-    //         initializePrintWriter(file);
-    //     }
-    //     catch (Exception e) {
-    //         System.out.println("Error: " + e.getMessage());
-    //     }
+    // public static void main(String args[]) {
+    //     initializeLogger(1001);
+    //     logReceivedHaveMessage(1002, 69);
+    //     // printWriter.close();
     // }
 
     public static void initializeLogger(int peerId) {
@@ -49,20 +26,19 @@ public class Logger {
             File file = createLog(peerId);
             initializePrintWriter(file);
         } catch (Exception e) {
-            System.out.println("Error: ");
-            throw new RuntimeException(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private static File createLog(int peerId) throws Exception{
-        String path = "../project/log_peer_" + peerId + ".log";
+        String path = "log_peer_" + peerId + ".log";
         File file = new File(path);
-        file.getParentFile().mkdirs();
+        file.createNewFile();
+        // file.getParentFile().mkdirs();
         return file;
     }
 
     private static void initializePrintWriter(File file) throws IOException{
-        file.createNewFile();
         FileOutputStream fileOutputStream = new FileOutputStream(file, false);
         printWriter = new PrintWriter(fileOutputStream, true);
     }
@@ -107,11 +83,11 @@ public class Logger {
         writeFile(getTimeStamp() + ": Peer " + clientId + " has the optimistically unchoked neighbor " + unchokedNeighbor + ".");
     }
 
-    public static void logUnchoke(int peerId1) {
+    public static void logUnchokedBy(int peerId1) {
         writeFile(getTimeStamp() + ": Peer " + clientId + " is unchoked by " + peerId1 + ".");
     }
 
-    public static void logChoke(int peerId1) {
+    public static void logChokedBy(int peerId1) {
         writeFile(getTimeStamp() + ": Peer " + clientId + " is choked by " + peerId1 + ".");
     }
 
