@@ -1,11 +1,11 @@
 import java.util.*;
 
 public class ChokeHandler {
-	volatile static List<Integer> clientIsChokedBy = new ArrayList<Integer>();
-	volatile static List<Integer> neighborsChokedByClient = new ArrayList<Integer>();
+	volatile static ArrayList<Integer> clientIsChokedBy = new ArrayList<>();
+	volatile static ArrayList<Integer> neighborsChokedByClient = new ArrayList<>();
 
 	public static synchronized List<Integer> getChokedNeighbors() {
-		return neighborsChokedByClient;
+		return new ArrayList<>(neighborsChokedByClient);
 	}
 
 	public static synchronized void receivedChokeMessage(int otherPeerID) {
@@ -28,16 +28,15 @@ public class ChokeHandler {
 	}
 
 	public static byte[] constructChokeMessage(int peerID, boolean choke) { // if choke is false, then unchoke
-		byte [] message = null;
+		byte [] message = new byte[0];
 		byte [] chokeMessage = null;
-		if(choke = false) {
-        	unchokePeer(peerID);
+		if(!choke) {
+        	chokeMessage = ActualMessageHandler.addHeader(message, ActualMessageHandler.UNCHOKE);
         }
         else {
         	chokeMessage = ActualMessageHandler.addHeader(message, ActualMessageHandler.CHOKE);
         }
 		return chokeMessage;
-		//throw new UnsupportedOperationException();
     }
 
 	public static synchronized boolean chokePeer(int peerID) {

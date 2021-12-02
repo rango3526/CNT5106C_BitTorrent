@@ -8,7 +8,7 @@ public class Client extends Thread {
 	volatile ObjectInputStream in; // stream read from the socket
 
 	volatile int selfClientID = -1; // This own client's ID
-	volatile int otherPeerID = -1; // ID of peer we're connecting to
+	public volatile int otherPeerID = -1; // ID of peer we're connecting to
 
 	volatile AtomicLong cumulativeDownloadTimeNanoseconds = new AtomicLong(0);
 	volatile AtomicLong cumulativeBytesDownloaded = new AtomicLong(0);
@@ -73,7 +73,7 @@ public class Client extends Thread {
 			} catch (IOException ioException) {
 				System.out.println("Disconnect with Client " + otherPeerID);
 			}
-			System.out.println("Connections to " + otherPeerID + " closed.");
+			System.out.println("Connection to " + otherPeerID + " closed.");
 		}
 	}
 

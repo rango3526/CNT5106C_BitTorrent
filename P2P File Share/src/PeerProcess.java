@@ -13,12 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerProcess {
     static volatile ConcurrentHashMap<Integer, Client> allClients = new ConcurrentHashMap<>();
-    static volatile int selfClientID = -1;
+    public static volatile int selfClientID = -1;
 
     static volatile OptimisticUnchokeHandler ouh = null;
     static volatile FindPreferredNeighbors fpn = null;
 
     public static volatile boolean isRunning = true;
+
+    public static volatile Server server;
 
     // static PrintWriter printWriter;
 
@@ -54,7 +56,17 @@ public class PeerProcess {
             FileHandler.initializePieceMapFromCompleteFile();
         }
         startServer();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e2) {
+            e2.printStackTrace();
+        }
         connectToPeers();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e2) {
+            e2.printStackTrace();
+        }
         ouh = new OptimisticUnchokeHandler();
         ouh.start();
         fpn = new FindPreferredNeighbors();
@@ -140,15 +152,13 @@ public class PeerProcess {
 	}
 
     public static void startServer() {
-        try {
-            Server.startServer(selfClientID);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        Server.selfClientID = selfClientID;
+        server = new Server();
+        server.start();
     }
 
     public static synchronized void connectionFromNewPeer(int peerID, Client c) {
+        System.out.println("Peer " + peerID + " has connected.");
         allClients.put(peerID, c);
     }
 

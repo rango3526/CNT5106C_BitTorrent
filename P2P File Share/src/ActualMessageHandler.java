@@ -77,9 +77,20 @@ public class ActualMessageHandler
     	byte [] combined = stream.toByteArray();
     	return (combined);
     }
+
+    public static int byteArrayToInt(byte[] byteArray) {
+        return new BigInteger(byteArray).intValue();
+    }
     
-    public static int getMsgType(byte[] msg) 
+    public static int getMsgType(byte[] fullMessage) 
     {
-        throw new UnsupportedOperationException();
+        ByteBuffer bytearray = ByteBuffer.wrap(fullMessage);
+		byte[] msglengthbytes = new byte[4];
+    	byte[] msgtypebytes = new byte[1];
+        // bytearray.get(msglengthbytes, 0, msglengthbytes.length);
+        bytearray.get(msgtypebytes, msglengthbytes.length, 1);
+        // String msgLengthString = new String(msglengthbytes);
+		return byteArrayToInt(msgtypebytes);
+
     }
 }
