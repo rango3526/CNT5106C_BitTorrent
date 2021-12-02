@@ -44,7 +44,13 @@ public class Client extends Thread {
 
 				while (PeerProcess.isRunning) {
 					try {
-						handleAnyMessage(receiveMessage());
+						try {
+							handleAnyMessage(receiveMessage());
+						}
+						catch (EOFException eofException) {
+							System.out.println("EOF detected, but will continue.");
+							// break;
+						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();

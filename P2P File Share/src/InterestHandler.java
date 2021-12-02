@@ -5,8 +5,8 @@ import java.util.List;
 // Contains functions for interested and not interested signals
 
 public class InterestHandler {
-    static volatile List<Integer> interestedPeers = new ArrayList<>();
-    static volatile List<Integer> uninterestedPeers = new ArrayList<>();
+    static volatile ArrayList<Integer> interestedPeers = new ArrayList<>();
+    static volatile ArrayList<Integer> uninterestedPeers = new ArrayList<>();
 
     public static byte [] constructInterestMessage(boolean interested) {
     	byte [] emptyByte = new byte[0];
@@ -19,11 +19,11 @@ public class InterestHandler {
     }
 
     public static synchronized List<Integer> getUninterestedPeers() {
-        return uninterestedPeers;
+        return new ArrayList<>(uninterestedPeers);
     }
 
     public static synchronized List<Integer> getInterestedPeers() {
-        return interestedPeers;
+        return new ArrayList<>(interestedPeers);
     }
 
     public static synchronized void receivedInterestedMessage(int fromPeerID) {

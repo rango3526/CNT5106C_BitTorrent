@@ -65,6 +65,45 @@ cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' 
 Run PeerProcess manually on remote:
 java -cp ".:jsch-0.0.54.jar" PeerProcess 1001
 
+
+======================================================================================================================================================================================================================================================
+
+(Change rangerchenore to your gatorlink username)
+
+For remote linux (on thunder.cise):
+
+Change directory to src:
+cd '~/CNT5106C_BitTorrent/P2P File Share/src'
+
+Make source list:
+find . -name "*.java" > sources.txt
+
+Compile with .jar file:
+javac -d '~/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:~/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
+
+Copy the class files over with:
+scp ~/CNT5106C_BitTorrent/P2P\ File\ Share/bin/*.class rangerchenore@lin114-01.cise.ufl.edu:~
+
+To copy config and starting image:
+scp -r '~/CNT5106C_BitTorrent/P2P File Share/bin/config' rangerchenore@lin114-01.cise.ufl.edu:~ 
+scp -r '~/CNT5106C_BitTorrent/P2P File Share/bin/FileToShare' rangerchenore@lin114-01.cise.ufl.edu:~
+
+
+Altogether in one line:
+cd '~/CNT5106C_BitTorrent/P2P File Share/src' && find . -name "*.java" > sources.txt && javac -d '~/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:~/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt && scp ~/CNT5106C_BitTorrent/P2P\ File\ Share/bin/*.class rangerchenore@lin114-01.cise.ufl.edu:~ && scp -r '~/CNT5106C_BitTorrent/P2P File Share/bin/config' rangerchenore@lin114-01.cise.ufl.edu:~  && scp -r '~/CNT5106C_BitTorrent/P2P File Share/bin/FileToShare' rangerchenore@lin114-01.cise.ufl.edu:~
+
+Compile everything without sending over scp:
+cd '~/CNT5106C_BitTorrent/P2P File Share/src' && find . -name "*.java" > sources.txt && javac -d '~/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:~/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
+
+Run StartRemotePeers:
+cd '~/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:~/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' StartRemotePeers
+
+Run PeerProcess locally:
+cd '~/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:~/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' PeerProcess 1001
+
+Run PeerProcess manually on remote:
+java -cp ".:jsch-0.0.54.jar" PeerProcess 1001
+
 */
 
 // TODO: Add better debugger log
