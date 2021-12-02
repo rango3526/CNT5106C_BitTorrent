@@ -23,7 +23,10 @@ public class OptimisticUnchokeHandler extends Thread {
 
         eligibleNeighbors = ChokeHandler.getChokedNeighbors();
         eligibleNeighbors.removeAll(InterestHandler.getUninterestedPeers());
-
+        
+        if (eligibleNeighbors.size() == 0)
+            return;
+            
         Random r = new Random();
         int randomEligibleNeighborIndex = r.nextInt(eligibleNeighbors.size());
 

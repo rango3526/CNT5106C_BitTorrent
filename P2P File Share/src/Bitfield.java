@@ -20,7 +20,7 @@ public class Bitfield {
             
             List<Integer> allPeerIDs = ConfigReader.getAllPeerIDs();
             for (Integer peerID : allPeerIDs) {
-                System.out.println("Create bitset for peer: " + peerID);
+                // System.out.println("Create bitset for peer: " + peerID);
                 bitfields.put(peerID, new BitSet());
             }
             

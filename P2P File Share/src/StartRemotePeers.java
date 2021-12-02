@@ -54,13 +54,16 @@ Altogether in one line:
 cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src' && find . -name "*.java" > sources.txt && javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt && scp /Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P\ File\ Share/bin/*.class rangerchenore@lin114-01.cise.ufl.edu:~ && scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/config' rangerchenore@lin114-01.cise.ufl.edu:~  && scp -r '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/FileToShare' rangerchenore@lin114-01.cise.ufl.edu:~
 
 Compile everything without sending over scp:
-cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src' && export JAVA_HOME=`/usr/libexec/java_home -v 11.0.13` && find . -name "*.java" > sources.txt && javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
+cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src' && find . -name "*.java" > sources.txt && javac -d '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' @sources.txt
 
 Run StartRemotePeers:
 cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' StartRemotePeers
 
 Run PeerProcess locally:
 cd '/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin' && java -cp '.:/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/bin/jsch-0.1.54.jar' PeerProcess 1001
+
+Run PeerProcess manually on remote:
+java -cp ".:jsch-0.0.54.jar" PeerProcess 1001
 
 */
 

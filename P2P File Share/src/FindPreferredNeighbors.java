@@ -25,7 +25,7 @@ public class FindPreferredNeighbors extends Thread {
 		peerDownloadSpeeds.sort((a, b) -> Double.compare(b.downloadRate, a.downloadRate));
 
 		List<PeerInfoDownloadSpeed> preferredNeighbors = peerDownloadSpeeds.subList(0,
-				ConfigReader.getNumPreferredNeighbors());
+				ConfigReader.getNumPreferredNeighbors() > peerDownloadSpeeds.size() ? peerDownloadSpeeds.size() : ConfigReader.getNumPreferredNeighbors());
 
 		List<Integer> peerIDs = new ArrayList<>();
 		for (PeerInfoDownloadSpeed pids : preferredNeighbors) {

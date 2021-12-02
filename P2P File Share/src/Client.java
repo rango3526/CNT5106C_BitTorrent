@@ -43,10 +43,24 @@ public class Client extends Thread {
 				}
 
 				while (PeerProcess.isRunning) {
-					handleAnyMessage(receiveMessage());
+					try {
+						handleAnyMessage(receiveMessage());
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						break;
+					}
+
+					try {
+						Thread.sleep(25);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						break;
+					}
 				}
 			} catch (ClassNotFoundException classnot) {
-				System.err.println("Data received in unknown format");
+				System.out.println("Data received in unknown format");
+				classnot.printStackTrace();
 			}
 		} catch (IOException ioException) {
 			System.out.println("Disconnect with Client " + otherPeerID);

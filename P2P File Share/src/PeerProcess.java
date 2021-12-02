@@ -20,31 +20,32 @@ public class PeerProcess {
 
     public static volatile boolean isRunning = true;
 
-    static PrintWriter printWriter;
+    // static PrintWriter printWriter;
 
     public static void main(String args[]) {
         selfClientID = Integer.parseInt(args[0]);
 
         // Temporary debug logger ********************
-        String path = "DEBUG_log_peer_" + selfClientID + ".log";
-        File file = new File(path);
-        try {
-            file.createNewFile();
-            System.out.println("File location is: " + file.getAbsolutePath());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-            printWriter = new PrintWriter(fileOutputStream, true);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        // String path = "DEBUG_log_peer_" + selfClientID + ".log";
+        // File file = new File(path);
+        // try {
+        //     file.createNewFile();
+        //     System.out.println("File location is: " + file.getAbsolutePath());
+        // } catch (IOException e1) {
+        //     e1.printStackTrace();
+        // }
+        // try {
+        //     FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+        //     printWriter = new PrintWriter(fileOutputStream, true);
+        // } catch (IOException e1) {
+        //     e1.printStackTrace();
+        // }
+        DebugLogger.initializeLogger(selfClientID);
         // ********************************************
 
 
-        printWriter.println("Initializing peer...");
-        System.out.println("Initializing peer...");
+        // printWriter.println("Initializing peer...");
+        System.out.println(Logger.getTimeStamp() + ": Initializing peer...");
         Logger.initializeLogger(selfClientID);
         Bitfield.init(selfClientID);
         int state = ConfigReader.getStateFromPeerID(selfClientID);
@@ -58,7 +59,7 @@ public class PeerProcess {
         ouh.start();
         fpn = new FindPreferredNeighbors();
         fpn.start();
-        printWriter.println("Done initializing!");
+        // printWriter.println("Done initializing!");
         System.out.println("Done initializing!");
         try {
             Thread.sleep(10000);
@@ -67,9 +68,20 @@ public class PeerProcess {
         }
         finally {
             isRunning = false;
-            printWriter.println("Process stopped.");
+            try {
+                Server.listener.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            // printWriter.println("Process stopped.");
 
-System.out            .println("Process stopped.");
+            System.out.println("Process stopping...");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Process stopped.");
         }
     }
 
@@ -79,16 +91,22 @@ System.out            .println("Process stopped.");
         for (Integer peerID : peerIDs) {
             try {
                 if (peerID < selfClientID) {
-                    Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
+                    System.out.println("Connecting to peer " + peerID + "...");
+                    // Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
+                    Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), Server.sPort);
                     Client c = new Client(connection, true);
                     c.start();
                     allClients.put(peerID, c);
+                    System.out.println("Connected.");
+                }
+                else {
+                    System.out.println("Skipping connection to later peer " + peerID);
                 }
             }
             catch (Exception e) {
-                printWriter.println("Failed to connect to peer: " + peerID);
+                // printWriter.println("Failed to connect to peer: " + peerID);
     
-    System.out            .println("Failed to connect to peer: " + peerID);
+                System.out.println("Failed to connect to peer: " + peerID);
                 e.printStackTrace();
             }
         }
@@ -126,7 +144,7 @@ System.out            .println("Process stopped.");
             Server.startServer(selfClientID);
         }
         catch (Exception e) {
-            throw new RuntimeException("The server ran into a problem: \n" + e.getMessage());
+            e.printStackTrace();
         }
     }
 

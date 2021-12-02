@@ -10,8 +10,8 @@ import java.util.Map;
     
 public class Logger {
     // private static Map<String, Logger> map = new HashMap<>();s
-    private static PrintWriter printWriter;
-    private static int clientId;
+    private static volatile PrintWriter printWriter;
+    private static volatile int clientId;
 
     // public static void main(String args[]) {
     //     initializeLogger(1001);
@@ -43,7 +43,7 @@ public class Logger {
         printWriter = new PrintWriter(fileOutputStream, true);
     }
 
-    private static String getTimeStamp() {
+    public static String getTimeStamp() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return timestamp.toString();
     }
