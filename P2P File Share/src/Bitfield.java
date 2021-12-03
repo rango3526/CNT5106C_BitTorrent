@@ -9,7 +9,8 @@ public class Bitfield {
     private static volatile int selfClientID = -1;
     private static volatile ConcurrentHashMap<Integer, BitSet> bitfields = new ConcurrentHashMap<>();
 
-    private static boolean selfStartedWithData = false;
+    private static volatile boolean selfStartedWithData = false;
+    public static volatile boolean hasAllPieces = false;
     
     private static boolean initialized = false;
 
@@ -59,6 +60,7 @@ public class Bitfield {
         // }
         if (curPieceNumPossessed.get() == maxPieceAmt) {
             FileHandler.combinePiecesIntoCompleteFile();
+            hasAllPieces = true;
         }
     }
 
@@ -127,6 +129,7 @@ public class Bitfield {
 
     public static void selfStartsWithFile() {
         selfStartedWithData = true;
+        hasAllPieces = true;
         for (int i = 0; i < maxPieceAmt; i++) {
             selfReceivedPiece(i);
         }

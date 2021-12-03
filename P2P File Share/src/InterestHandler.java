@@ -39,4 +39,8 @@ public class InterestHandler {
         if (interestedPeers.contains(fromPeerID))
             interestedPeers.remove(Integer.valueOf(fromPeerID));
     }
+
+    public static synchronized boolean peerIsInterestedInClient(int peerID) {
+        return interestedPeers.contains(peerID);
+    }
 }
