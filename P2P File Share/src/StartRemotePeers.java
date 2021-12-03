@@ -233,7 +233,7 @@ public class StartRemotePeers {
 
         }
 
-        System.out.println("***Finished starting remote peers!");
+        System.out.println("***** Finished starting remote peers! *****");
     }
 
 }

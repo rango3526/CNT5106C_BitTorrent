@@ -10,21 +10,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FileHandler {
     volatile static ConcurrentHashMap<Integer, byte[]> pieceMap = new ConcurrentHashMap<>();
-    public static final String FILE_PATH = "./FileToShare/" + ConfigReader.getFileName();
+    public static final String FILE_PATH = "./FileToShare/";
+    public static final String FILE_NAME = ConfigReader.getFileName();
 
-    public static byte[] GetFilePiece(int pieceIndex) {
+    public static byte[] getFilePiece(int pieceIndex) {
         return pieceMap.get(pieceIndex);
     }
 
     public static synchronized void initializePieceMapFromCompleteFile() {
-        File file = new File(FILE_PATH);
+        File file = new File(FILE_PATH+FILE_NAME);
         if (!file.exists()) {
-            System.out.println("This system is not starting with a file.");
+            System.out.println("FATAL: System cannot find file that the client should start with");
             return;
         }
         
         try {
             byte[] fileBytes = Files.readAllBytes(file.toPath());
+            System.out.println("Given file is " + fileBytes.length + " bytes long");
             int pieceSize = ConfigReader.getPieceSize();
 
             for (int i = 0; i < fileBytes.length; i+= pieceSize) {
@@ -45,12 +47,14 @@ public class FileHandler {
     }
 
     public static synchronized boolean combinePiecesIntoCompleteFile() {
+        System.out.println("ALL PIECES RECEIVED! Attempting to combine them into file...");
+
         FileOutputStream fileOutputStream = null;
 
         try {
-            fileOutputStream = new FileOutputStream(new File(FILE_PATH));
+            fileOutputStream = new FileOutputStream(new File(FILE_PATH + "NEW_" + FILE_NAME));
 
-            int maxIndex = ConfigReader.getFileSize() / ConfigReader.getPieceSize();
+            int maxIndex = Bitfield.calculatePieceAmt() - 1;
             
             for (int i = 0; i < maxIndex; i++) {
                 if (!pieceMap.containsKey(i)) {
@@ -73,6 +77,7 @@ public class FileHandler {
         }
 
         Logger.logFullDownloadComplete();
+        System.out.println("FILE RECOMBINATION COMPLETE!");
         return true;
     }
 

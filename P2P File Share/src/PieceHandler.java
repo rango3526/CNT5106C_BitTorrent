@@ -13,20 +13,18 @@ public class PieceHandler {
         PeerProcess.broadcastHaveMessage(pieceIndex);
 
         if (RequestHandler.clientNeedsSomePieceFromPeer(peerID)) {
-            PeerProcess.sendMessageToPeer(peerID, RequestHandler.constructRequestMessage(peerID));
+            byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(peerID);
+            if (requestMessage.length != 0) {
+                System.out.println("Sending ANOTHER request for piece from " + peerID);
+                PeerProcess.sendMessageToPeer(peerID, requestMessage);
+            }
         }
     }
 
-    public static synchronized byte[] generatePieceMessage(int pieceIndex) {
-        byte[] filePiece = FileHandler.GetFilePiece(pieceIndex);
-        byte[] pieceMessage = constructPieceMessage(pieceIndex, filePiece);
-        return pieceMessage;
-    }
-
-    public static byte[] constructPieceMessage(int pieceIndex, byte[] pieceBytes) {
+    public static synchronized byte[] constructPieceMessage(int pieceIndex, byte[] pieceBytes) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-            outputStream.write(ActualMessageHandler.convertIntToBytes(pieceIndex));
+            outputStream.write(ActualMessageHandler.convertIntTo4Bytes(pieceIndex));
             outputStream.write(pieceBytes);
     
             byte[] fullPayload = outputStream.toByteArray();
@@ -37,7 +35,7 @@ public class PieceHandler {
         }
     }
 
-    public static byte[] constructPieceMessage(int pieceIndex) {
+    public static synchronized byte[] constructPieceMessage(int pieceIndex) {
         byte[] pieceBytes = FileHandler.GetFilePiece(pieceIndex);
         return constructPieceMessage(pieceIndex, pieceBytes);
     }

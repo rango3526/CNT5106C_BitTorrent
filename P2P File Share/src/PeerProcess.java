@@ -52,8 +52,9 @@ public class PeerProcess {
         Bitfield.init(selfClientID);
         int state = ConfigReader.getStateFromPeerID(selfClientID);
         if (state == 1) {
-            Bitfield.selfStartsWithFile();
+            System.out.println("STARTING WITH WHOLE FILE");
             FileHandler.initializePieceMapFromCompleteFile();
+            Bitfield.selfStartsWithFile();
         }
         startServer();
         try {
@@ -74,7 +75,7 @@ public class PeerProcess {
         // printWriter.println("Done initializing!");
         System.out.println("Done initializing!");
         try {
-            Thread.sleep(10000);
+            Thread.sleep(120000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -85,15 +86,18 @@ public class PeerProcess {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            // printWriter.println("Process stopped.");
+            
+            for (Client client: allClients.values()) {
+                client.interrupt();
+            }
 
-            System.out.println("Process stopping...");
+            System.out.println("PeerProcess stopping...");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("Process stopped.");
+            System.out.println("PeerProcess stopped.");
         }
     }
 
@@ -158,14 +162,14 @@ public class PeerProcess {
     }
 
     public static synchronized void connectionFromNewPeer(int peerID, Client c) {
-        System.out.println("Peer " + peerID + " has connected.");
         allClients.put(peerID, c);
     }
 
     public static synchronized void broadcastHaveMessage(int pieceIndex) {
-        byte[] haveMessage = HaveHandler.generateHaveMessage(pieceIndex);
+        byte[] haveMessage = HaveHandler.constructHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
+            System.out.println("Sending HAVE message to " + c.otherPeerID);
             c.sendMessage(haveMessage);
         }
     }

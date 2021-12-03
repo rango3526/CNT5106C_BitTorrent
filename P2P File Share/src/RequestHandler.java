@@ -10,8 +10,8 @@ public class RequestHandler {
 		BitSet ourBitfield = Bitfield.getSelfBitfield();
 		BitSet peerBitfield = Bitfield.getPeerBitfield(peerID);
 
-		for (int i = 0; i < ourBitfield.length(); i++) {
-			if (!ourBitfield.get(i) && peerBitfield.get(i) && clientNeedsThisPiece(i))
+		for (int i = 0; i < ourBitfield.size(); i++) {
+			if (peerBitfield.get(i) && clientNeedsThisPiece(i))
 				return i;
 		}
 		return -1; // there are no pieces left, we should have all pieces (or we have all except
@@ -19,8 +19,8 @@ public class RequestHandler {
 	}
 
 	public static synchronized byte[] constructRequestMessage(int pieceIndex) {
-		byte[] newPieceIndex = ActualMessageHandler.convertIntToBytes(pieceIndex);
-		byte[] message = ActualMessageHandler.addHeader(newPieceIndex, ActualMessageHandler.REQUEST);
+		byte[] pieceIndexBytes = ActualMessageHandler.convertIntTo4Bytes(pieceIndex);
+		byte[] message = ActualMessageHandler.addHeader(pieceIndexBytes, ActualMessageHandler.REQUEST);
 
 		bitsWeHaveAlreadyRequested.set(pieceIndex, true);
 		// TODO: consider case where piece is not received (other Peer re-decides optimal neighbors); must reset this value
@@ -29,14 +29,7 @@ public class RequestHandler {
 	}
 
 	public static synchronized boolean clientNeedsSomePieceFromPeer(int peerID) {
-		BitSet peerBitfield = Bitfield.getPeerBitfield(peerID);
-
-		for (int i = 0; i < peerBitfield.length(); i++) {
-			if (peerBitfield.get(i) && clientNeedsThisPiece(i))
-				return true;
-		}
-
-		return false;
+		return findNeededPieceIndexFromPeer(peerID) != -1;
 	}
 
 	public static boolean clientNeedsThisPiece(int pieceIndex) {
@@ -51,11 +44,17 @@ public class RequestHandler {
 
 	public static synchronized byte[] constructRequestMessageAndChooseRandomPiece(int peerID) {
 		int pieceIndex = findNeededPieceIndexFromPeer(peerID);
+		if (pieceIndex == -1) {
+			System.out.println("FATAL: Cannot find the piece client needs from peer: " + peerID);
+			return new byte[0];
+		}
 		return constructRequestMessage(pieceIndex);
 	}
 
 	public static synchronized void receivedRequestMessage(int peerID, byte[] msgPayload) {
-		int pieceIndex = ByteBuffer.wrap(msgPayload).getInt();
+		int pieceIndex = ActualMessageHandler.byteArrayToInt(msgPayload);
+		System.out.println("Sending piece message...");
 		PeerProcess.sendMessageToPeer(peerID, PieceHandler.constructPieceMessage(pieceIndex));
+		System.out.println("Piece message sent!");
 	}
 }

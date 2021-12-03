@@ -15,30 +15,36 @@ public class Bitfield {
 
     public static void init(int selfClientID) {
         if (!initialized) {
-            calculatePieceAmt();
+            Bitfield.maxPieceAmt = calculatePieceAmt();
             Bitfield.selfClientID = selfClientID;
             
             List<Integer> allPeerIDs = ConfigReader.getAllPeerIDs();
+
             for (Integer peerID : allPeerIDs) {
-                // System.out.println("Create bitset for peer: " + peerID);
-                bitfields.put(peerID, new BitSet());
+                int pieceAmt = Bitfield.calculatePieceAmt();
+                System.out.println("Create bitset size " + pieceAmt + " for peer: " + peerID);
+                BitSet thisBitSet = new BitSet(pieceAmt);
+                for (int i = 0; i < pieceAmt; i++) {
+                    thisBitSet.set(i, false);
+                }
+                bitfields.put(peerID, thisBitSet);
             }
             
             initialized = true;
         }
     }
 
-    private static void calculatePieceAmt() {
-        if (maxPieceAmt == -1) {
-            int fileSize = ConfigReader.getFileSize();
-            int pieceSize = ConfigReader.getPieceSize();
-    
-            maxPieceAmt = fileSize / pieceSize;
-    
-            if (fileSize % pieceSize != 0) {
-                maxPieceAmt += 1;
-            }
+    public static int calculatePieceAmt() {
+        int fileSize = ConfigReader.getFileSize();
+        int pieceSize = ConfigReader.getPieceSize();
+
+        int maximumPieceAmt = fileSize / pieceSize;
+
+        if (fileSize % pieceSize != 0) {
+            maximumPieceAmt += 1;
         }
+
+        return maximumPieceAmt;
     }
 
     public static void peerReceivedPiece(int peerID, int pieceIndex) {
@@ -48,7 +54,10 @@ public class Bitfield {
     public static void selfReceivedPiece(int pieceIndex) {
         curPieceNumPossessed = new AtomicInteger(curPieceNumPossessed.get() + 1);
         bitfields.get(selfClientID).set(pieceIndex, true);
-        if (!selfStartedWithData && curPieceNumPossessed.get() == maxPieceAmt) {
+        // if (!selfStartedWithData && curPieceNumPossessed.get() == maxPieceAmt) {
+        //     FileHandler.combinePiecesIntoCompleteFile();
+        // }
+        if (curPieceNumPossessed.get() == maxPieceAmt) {
             FileHandler.combinePiecesIntoCompleteFile();
         }
     }
@@ -58,11 +67,11 @@ public class Bitfield {
     }
 
     public static BitSet getPeerBitfield(int peerID) {
-        return bitfields.get(peerID);
+        return (BitSet)bitfields.get(peerID).clone();
     }
 
     public static BitSet getSelfBitfield() {
-        return bitfields.get(selfClientID);
+        return (BitSet)bitfields.get(selfClientID).clone();
     }
 
     public static byte[] bitfieldToByteArray(BitSet bitfield) {
@@ -70,7 +79,14 @@ public class Bitfield {
     }
 
     public static BitSet byteArrayToBitfield(byte[] bytes) {
-        return BitSet.valueOf(bytes);
+        BitSet receivedBitSet = BitSet.valueOf(bytes);
+
+        BitSet newBitSet = new BitSet(Bitfield.calculatePieceAmt());
+        for (int i = 0; i < newBitSet.size(); i++) {
+            newBitSet.set(i, receivedBitSet.get(i));
+        }
+
+        return newBitSet;
     }
     
     public static boolean doesPeerHavePiece(int peerID, int pieceIndex) {
@@ -89,11 +105,23 @@ public class Bitfield {
         return getSelfBitfield().get(pieceIndex);
     }
 
+    public static void printBitset(BitSet bitSet) {
+        StringBuilder s = new StringBuilder();
+        for( int i = 0; i < bitSet.size();  i++ )
+        {
+            s.append( bitSet.get(i) ? "1": "0" );
+        }
+
+        System.out.println(s);
+    }
+
     public static void receivedBitfieldMessage(int otherPeerID, byte[] msgPayload) {
         BitSet peerBitfield = Bitfield.byteArrayToBitfield(msgPayload);
+        printBitset(peerBitfield);
 		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
 		
         // send interested / non-interested message
+        System.out.println("Sending INTEREST(or not) message to " + otherPeerID);
         PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)));
     }
 
@@ -114,6 +142,12 @@ public class Bitfield {
 		 */
         //throw new UnsupportedOperationException();
     	return ActualMessageHandler.addHeader(bitfield, ActualMessageHandler.BITFIELD);
+    }
+
+    public static byte[] constructBitfieldMessage() 
+    {
+        // constructs bitfield for self
+    	return constructBitfieldMessage(getSelfBitfieldAsByteArray());
     }
 
     public static int getNumberOfPiecesClientHas() {

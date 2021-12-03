@@ -5,14 +5,14 @@ import java.nio.ByteBuffer;
 
 public class ActualMessageHandler 
 {
-    public static final byte CHOKE = 0;
-	public static final byte UNCHOKE = 1;
-	public static final byte INTERESTED = 2;
-	public static final byte UNINTERESTED = 3;
-	public static final byte HAVE = 4;
-	public static final byte BITFIELD = 5;
-	public static final byte REQUEST = 6;
-	public static final byte PIECE = 7;
+    public static final int CHOKE = 0;
+	public static final int UNCHOKE = 1;
+	public static final int INTERESTED = 2;
+	public static final int UNINTERESTED = 3;
+	public static final int HAVE = 4;
+	public static final int BITFIELD = 5;
+	public static final int REQUEST = 6;
+	public static final int PIECE = 7;
 
     // I think Actual Messages are anything except Handshake messages
     public static byte[] extractPayload(byte[] fullMessage) 
@@ -20,26 +20,25 @@ public class ActualMessageHandler
         ByteBuffer bytearray = ByteBuffer.wrap(fullMessage);
 		byte[] msglengthbytes = new byte[4];
     	byte[] msgtypebytes = new byte[1];
-        bytearray.get(msglengthbytes, 0, msglengthbytes.length);
-        String msgLengthString = new String(msglengthbytes);
+        bytearray = bytearray.get(msglengthbytes, 0, msglengthbytes.length);
+        int msgLengthInt = byteArrayToInt(msglengthbytes);
+        bytearray = bytearray.get(new byte[1], 0, 1);
 		String msgtypeString = new String(msgtypebytes);
-        if (msgLengthString == "1") 
+        if (msgLengthInt == 1) 
         {
             byte [] msgpayloadbytes = new byte[0];
             return msgpayloadbytes;
         } 
         else 
         {
-            int msgLengthInt = Integer.parseInt(msgLengthString);
-            byte[] msgpayloadbytes = new byte[msgLengthInt];
-            bytearray.get(msgpayloadbytes, 0, msgpayloadbytes.length);
-            String msgpayloadString = new String(msgpayloadbytes);
+            byte[] msgpayloadbytes = new byte[msgLengthInt-1];
+            bytearray = bytearray.get(msgpayloadbytes, 0, msgpayloadbytes.length);
             return msgpayloadbytes;
         }
     }
   
     //4digit byte array
-    public static byte[] convertIntToBytes(int pieceIndex) 
+    public static byte[] convertIntTo4Bytes(int pieceIndex) 
 	{
 	    return new byte[] 
 	    {
@@ -51,7 +50,7 @@ public class ActualMessageHandler
 	}
     
     //1 digit byte array
-    public static byte[] bigIntToByteArray(int pieceIndex) 
+    public static byte[] convertIntoTo1Byte(int pieceIndex) 
     {
         BigInteger bigPieceIndex = BigInteger.valueOf(pieceIndex);      
         return bigPieceIndex.toByteArray();
@@ -60,8 +59,8 @@ public class ActualMessageHandler
     public static byte[] addHeader(byte[] messagePayload, int messageType) 
     {
     	int lengthOfPayload = messagePayload.length + 1;
-    	byte [] newLength = convertIntToBytes(lengthOfPayload);
-    	byte [] newMessageType = bigIntToByteArray(messageType);
+    	byte [] newLength = convertIntTo4Bytes(lengthOfPayload);
+    	byte [] newMessageType = convertIntoTo1Byte(messageType);
     	ByteArrayOutputStream stream = new ByteArrayOutputStream();
     	try 
     	{
@@ -84,13 +83,14 @@ public class ActualMessageHandler
     
     public static int getMsgType(byte[] fullMessage) 
     {
-        ByteBuffer bytearray = ByteBuffer.wrap(fullMessage);
+        ByteBuffer byteBuffer = ByteBuffer.wrap(fullMessage);
 		byte[] msglengthbytes = new byte[4];
     	byte[] msgtypebytes = new byte[1];
-        // bytearray.get(msglengthbytes, 0, msglengthbytes.length);
-        bytearray.get(msgtypebytes, msglengthbytes.length, 1);
+        byteBuffer = byteBuffer.get(msglengthbytes, 0, msglengthbytes.length);
+        byteBuffer = byteBuffer.get(msgtypebytes, 0, 1);
         // String msgLengthString = new String(msglengthbytes);
-		return byteArrayToInt(msgtypebytes);
-
+        int type = byteArrayToInt(msgtypebytes);
+        // System.out.println("This message type is: " + type);
+		return type;
     }
 }

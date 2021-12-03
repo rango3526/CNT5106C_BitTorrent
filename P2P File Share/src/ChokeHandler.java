@@ -18,7 +18,10 @@ public class ChokeHandler {
 	public static synchronized void receivedUnchokeMessage(int otherPeerID) {
 		if (RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)) {
 			byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(otherPeerID);
-			PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
+			if (requestMessage.length != 0) {
+				System.out.println("Sending a REQUEST for piece from " + otherPeerID + " after just being unchoked");
+				PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
+			}
 		}
 		
 		if (clientIsChokedBy.contains(otherPeerID)) {

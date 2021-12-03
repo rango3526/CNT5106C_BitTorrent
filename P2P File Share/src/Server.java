@@ -32,16 +32,15 @@ public class Server extends Thread {
 					e.printStackTrace();
 					break;
 				}
-				System.out.println("Peer connected!");
+				System.out.println("Peer connected! Starting handshake.");
 				c.start();
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(120000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					break;
 				}
-				PeerProcess.connectionFromNewPeer(c.otherPeerID, c);
+				// PeerProcess.connectionFromNewPeer(c.otherPeerID, c);
 				if (System.currentTimeMillis() > startTime + 30000) {
 					System.out.println("" + System.currentTimeMillis() + ": Stopping server on time.");
 					break;

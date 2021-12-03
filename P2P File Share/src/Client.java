@@ -31,16 +31,25 @@ public class Client extends Thread {
 
 			try {
 				if (shouldInitiateHandshake) {
+					System.out.println("Initiated handhshake with " + otherPeerID);
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
-					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
+					System.out.println("Waiting for handshake response from " + otherPeerID);
+					this.otherPeerID = waitForAndHandleHandshake();
 					Logger.logTcpConnectionTo(this.otherPeerID);
 					// TODO: make sure this looks right
 				} else {
-					this.otherPeerID = Handshake.receivedHandshakeResponseMessage(receiveMessage());
+					System.out.println("Waiting for handshake initiation from " + otherPeerID);
+					this.otherPeerID = waitForAndHandleHandshake();
+					System.out.println("Sending handhshake reponse to " + otherPeerID);
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 					Logger.logTcpConnectionFrom(this.otherPeerID);
 					PeerProcess.connectionFromNewPeer(otherPeerID, this);
 				}
+
+				System.out.println("Sending BITFIELD message to " + otherPeerID);
+				sendMessage(Bitfield.constructBitfieldMessage());
+
+				System.out.println("Peer " + otherPeerID + " has finished handshaking!");
 
 				while (PeerProcess.isRunning) {
 					try {
@@ -48,7 +57,7 @@ public class Client extends Thread {
 							handleAnyMessage(receiveMessage());
 						}
 						catch (EOFException eofException) {
-							System.out.println("EOF detected, but will continue.");
+							// System.out.println("EOF detected, but will continue.");
 							// break;
 						}
 					}
@@ -67,6 +76,9 @@ public class Client extends Thread {
 			} catch (ClassNotFoundException classnot) {
 				System.out.println("Data received in unknown format");
 				classnot.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Exception in second big try statement");
+				e.printStackTrace();
 			}
 		} catch (IOException ioException) {
 			System.out.println("Disconnect with Client " + otherPeerID);
@@ -81,6 +93,8 @@ public class Client extends Thread {
 			}
 			System.out.println("Connection to " + otherPeerID + " closed.");
 		}
+
+		System.out.println("Client process terminated.");
 	}
 
 	// send a message to the output stream
@@ -99,31 +113,39 @@ public class Client extends Thread {
 
 		switch (messageType) {
 		case 0:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": CHOKE");
 			ChokeHandler.receivedChokeMessage(otherPeerID);
 			break;
 		case 1:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": UNCHOKE");
 			ChokeHandler.receivedUnchokeMessage(otherPeerID);
 			break;
 		case 2:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": INTEREST");
 			InterestHandler.receivedInterestedMessage(otherPeerID);
 			break;
 		case 3:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": NON-INTEREST");
 			InterestHandler.receivedUninterestedMessage(otherPeerID);
 			break;
 		case 4:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": HAVE");
 			HaveHandler.receivedHaveMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		case 5:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": BITFIELD");
 			Bitfield.receivedBitfieldMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		case 6:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": REQUEST");
 			RequestHandler.receivedRequestMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
-		case 8:
+		case 7:
+			System.out.println(Logger.getTimeStamp() + ": Message from " + otherPeerID + ": PIECE");
 			PieceHandler.receivedPieceMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		default:
-			throw new RuntimeException("Message received has invalid type");
+			throw new RuntimeException("FATAL: Message received has invalid type");
 		}
 	}
 
@@ -147,7 +169,7 @@ public class Client extends Thread {
 	}
 
 	synchronized void sendBitfieldMessage() {
-		Bitfield.constructBitfieldMessage(Bitfield.getBitfieldMessagePayload());
+		Bitfield.constructBitfieldMessage();
 	}
 
 	public synchronized double getDownloadRateInKBps() { // KiloBytes per second
@@ -158,12 +180,31 @@ public class Client extends Thread {
 	public synchronized void unchokePeer() {
 		byte[] unchokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, false);
 		ChokeHandler.unchokePeer(otherPeerID);
+		System.out.println("Sending UNCHOKE message to " + otherPeerID);
 		sendMessage(unchokeMsg);
 	}
 
 	public synchronized void chokePeer() {
 		byte[] chokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, true);
 		ChokeHandler.chokePeer(otherPeerID);
+		System.out.println("Sending CHOKE message to " + otherPeerID);
 		sendMessage(chokeMsg);
+	}
+
+	public synchronized int waitForAndHandleHandshake() throws ClassNotFoundException, IOException {
+		// boolean receivedHandshake = false;
+
+		while (true) {
+			try {
+				byte[] message = receiveMessage();
+				if (Handshake.isHandshakeMessage(message)) {
+					return Handshake.receivedHandshakeResponseMessage(message);
+				}
+			} catch (EOFException e) {
+				// this is fine, do nothing
+			}
+		}
+
+		// System.out.println("FATAL: Error caused handshake not to be received from peer: " + otherPeerID);
 	}
 }
