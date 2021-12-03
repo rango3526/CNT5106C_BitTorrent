@@ -36,7 +36,7 @@ public class PieceHandler {
     }
 
     public static synchronized byte[] constructPieceMessage(int pieceIndex) {
-        byte[] pieceBytes = FileHandler.GetFilePiece(pieceIndex);
+        byte[] pieceBytes = FileHandler.getFilePiece(pieceIndex);
         return constructPieceMessage(pieceIndex, pieceBytes);
     }
 

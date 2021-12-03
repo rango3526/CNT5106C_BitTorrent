@@ -5,15 +5,34 @@ public class RequestHandler {
 	static volatile BitSet bitsWeHaveAlreadyRequested = new BitSet();
 
 	public static synchronized int findNeededPieceIndexFromPeer(int peerID) {
-		// TODO: Make random by using ourBitfield.cardinality() and stuff
-
 		BitSet ourBitfield = Bitfield.getSelfBitfield();
 		BitSet peerBitfield = Bitfield.getPeerBitfield(peerID);
 
-		for (int i = 0; i < ourBitfield.size(); i++) {
-			if (peerBitfield.get(i) && clientNeedsThisPiece(i))
-				return i;
+		BitSet lackingPieces = (BitSet)peerBitfield.clone();
+		lackingPieces.andNot(ourBitfield);
+
+		if (lackingPieces.cardinality() == 0)
+			return -1;
+
+		Random r = new Random();
+
+		int numTriesLeft = Bitfield.calculatePieceAmt();
+		while (numTriesLeft > 0) {
+			int randomPick = r.nextInt(lackingPieces.cardinality()) + 1;
+			// System.out.println("************************** Random pick: " + randomPick);
+			int curIndex = -1;
+
+			for (int i = 0; i < randomPick; i++)
+				curIndex = lackingPieces.nextSetBit(curIndex+1);
+
+			if (clientNeedsThisPiece(curIndex)) {
+				// System.out.println("************************** Randomly chosen index: " + curIndex);
+				return curIndex;
+			}
+			
+			numTriesLeft -= 1;
 		}
+
 		return -1; // there are no pieces left, we should have all pieces (or we have all except
 					// ones we've requested)
 	}

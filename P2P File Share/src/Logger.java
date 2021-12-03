@@ -100,7 +100,7 @@ public class Logger {
     }
 
     public static void logPieceDownloadComplete(int fromId, int pieceIndex, int numberOfPieces) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " has downloaded the piece " + pieceIndex + " from " + fromId + "." + "Now the number of pieces it has is " + numberOfPieces);
+        writeFile(getTimeStamp() + ": Peer " + clientId + " has downloaded the piece " + pieceIndex + " from " + fromId + "." + " Now the number of pieces it has is " + numberOfPieces);
     }
 
     public static void logFullDownloadComplete() {
