@@ -21,14 +21,14 @@ public class RequestHandler {
 		int numTriesLeft = Bitfield.calculatePieceAmt();
 		while (numTriesLeft > 0) {
 			int randomPick = r.nextInt(lackingPieces.cardinality()) + 1;
-			// System.out.println("************************** Random pick: " + randomPick);
+			// System.out.println(Logger.getTimestamp() + ": ************************** Random pick: " + randomPick);
 			int curIndex = -1;
 
 			for (int i = 0; i < randomPick; i++)
 				curIndex = lackingPieces.nextSetBit(curIndex+1);
 
 			if (clientNeedsThisPiece(curIndex)) {
-				// System.out.println("************************** Randomly chosen index: " + curIndex);
+				// System.out.println(Logger.getTimestamp() + ": ************************** Randomly chosen index: " + curIndex);
 				return curIndex;
 			}
 			
@@ -66,7 +66,7 @@ public class RequestHandler {
 	public static synchronized byte[] constructRequestMessageAndChooseRandomPiece(int peerID) {
 		int pieceIndex = findNeededPieceIndexFromPeer(peerID);
 		if (pieceIndex == -1) {
-			System.out.println("FATAL: Cannot find the piece client needs from peer: " + peerID);
+			System.out.println(Logger.getTimestamp() + ": FATAL: Cannot find the piece client needs from peer: " + peerID);
 			return new byte[0];
 		}
 		return constructRequestMessage(pieceIndex);
@@ -74,14 +74,14 @@ public class RequestHandler {
 
 	public static synchronized void receivedRequestMessage(int peerID, byte[] msgPayload) {
 		if (ChokeHandler.getChokedNeighbors().contains(peerID)) {
-			System.out.println("REQUEST message from peer " + peerID + " will be ignored because it is choked.");
+			System.out.println(Logger.getTimestamp() + ": REQUEST message from peer " + peerID + " will be ignored because it is choked.");
 			return;
 		}
 
 		int pieceIndex = ActualMessageHandler.byteArrayToInt(msgPayload);
-		System.out.println("Sending piece message...");
+		System.out.println(Logger.getTimestamp() + ": Sending piece message...");
 		PeerProcess.sendMessageToPeer(peerID, PieceHandler.constructPieceMessage(pieceIndex));
-		System.out.println("Piece message sent!");
+		System.out.println(Logger.getTimestamp() + ": Piece message sent!");
 	}
 
 	public static synchronized void clearPiecesAlreadyRequestedList() {

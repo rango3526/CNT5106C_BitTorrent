@@ -143,7 +143,7 @@ public class StartRemotePeers {
 
     public static void main(String[] args) {
 
-        System.out.println("Starting remote peers...");
+        System.out.println(Logger.getTimestamp() + ": Starting remote peers...");
 
         ArrayList<PeerInfo> peerList = new ArrayList<>();
 
@@ -163,7 +163,7 @@ public class StartRemotePeers {
 
         for (PeerInfo remotePeer : peerList) {
             try {
-                System.out.println("Starting peer: " + remotePeer.peerID);
+                System.out.println(Logger.getTimestamp() + ": Starting peer: " + remotePeer.peerID);
                 JSch jsch = new JSch();
                 /*
                  * Give the path to your private key. Make sure your public key is already
@@ -171,21 +171,21 @@ public class StartRemotePeers {
                  * use the corressponding method of JSch which accepts a password.
                  */
                 jsch.addIdentity("~/.ssh/id_rsa", "");
-                System.out.println("Getting session...");
+                System.out.println(Logger.getTimestamp() + ": Getting session...");
                 Session session = jsch.getSession(ciseUser, remotePeer.getHostName(), 22);
-                System.out.println("Session obtained.");
+                System.out.println(Logger.getTimestamp() + ": Session obtained.");
                 Properties config = new Properties();
                 config.put("StrictHostKeyChecking", "no");
                 session.setConfig(config);
 
-                System.out.println("Connecting...");
+                System.out.println(Logger.getTimestamp() + ": Connecting...");
                 session.connect();
-                System.out.println("Connected.");
+                System.out.println(Logger.getTimestamp() + ": Connected.");
 
-                System.out.println("Session to peer# " + remotePeer.getPeerID() + " at " + remotePeer.getHostName());
+                System.out.println(Logger.getTimestamp() + ": Session to peer# " + remotePeer.getPeerID() + " at " + remotePeer.getHostName());
 
                 Channel channel = session.openChannel("exec");
-                System.out.println("remotePeerID" + remotePeer.getPeerID());
+                System.out.println(Logger.getTimestamp() + ": remotePeerID" + remotePeer.getPeerID());
                 ((ChannelExec) channel).setCommand(scriptPrefix + remotePeer.getPeerID());
 
                 channel.setInputStream(null);
@@ -194,7 +194,7 @@ public class StartRemotePeers {
                 InputStream input = channel.getInputStream();
                 channel.connect();
 
-                System.out.println("Channel Connected to peer# " + remotePeer.getPeerID() + " at "
+                System.out.println(Logger.getTimestamp() + ": Channel Connected to peer# " + remotePeer.getPeerID() + " at "
                         + remotePeer.getHostName() + " server with commands");
 
                 (new Thread() {
@@ -221,7 +221,7 @@ public class StartRemotePeers {
                         session.disconnect();
                     }
                 }).start();
-                System.out.println("Done with peer: " + remotePeer.peerID);
+                System.out.println(Logger.getTimestamp() + ": Done with peer: " + remotePeer.peerID);
             } catch (JSchException e) {
                 // TODO Auto-generated catch block
                 System.out.println(remotePeer.getPeerID() + " JSchException >:");
@@ -233,7 +233,7 @@ public class StartRemotePeers {
 
         }
 
-        System.out.println("***** Finished starting remote peers! *****");
+        System.out.println(Logger.getTimestamp() + ": ***** Finished starting remote peers! *****");
     }
 
 }

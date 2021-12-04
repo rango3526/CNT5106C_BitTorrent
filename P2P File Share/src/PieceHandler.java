@@ -15,7 +15,7 @@ public class PieceHandler {
         if (RequestHandler.clientNeedsSomePieceFromPeer(peerID)) {
             byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(peerID);
             if (requestMessage.length != 0) {
-                System.out.println("Sending ANOTHER request for piece from " + peerID);
+                System.out.println(Logger.getTimestamp() + ": Sending ANOTHER request for piece from " + peerID);
                 PeerProcess.sendMessageToPeer(peerID, requestMessage);
             }
         }

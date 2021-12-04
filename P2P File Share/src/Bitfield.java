@@ -23,7 +23,7 @@ public class Bitfield {
 
             for (Integer peerID : allPeerIDs) {
                 int pieceAmt = Bitfield.calculatePieceAmt();
-                System.out.println("Create bitset size " + pieceAmt + " for peer: " + peerID);
+                System.out.println(Logger.getTimestamp() + ": Create bitset size " + pieceAmt + " for peer: " + peerID);
                 BitSet thisBitSet = new BitSet(pieceAmt);
                 for (int i = 0; i < pieceAmt; i++) {
                     thisBitSet.set(i, false);
@@ -123,8 +123,9 @@ public class Bitfield {
 		Bitfield.setPeerBitfield(otherPeerID, peerBitfield);
 		
         // send interested / non-interested message
-        System.out.println("Sending INTEREST(or not) message to " + otherPeerID);
-        PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)));
+        boolean interested = RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID);
+        System.out.println(Logger.getTimestamp() + ": Sending " + (interested ? "" : "NON-") + "INTERESTED message to " + otherPeerID);
+        PeerProcess.sendMessageToPeer(otherPeerID, InterestHandler.constructInterestMessage(interested));
     }
 
     public static void selfStartsWithFile() {

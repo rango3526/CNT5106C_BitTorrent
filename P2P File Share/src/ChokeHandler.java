@@ -19,7 +19,7 @@ public class ChokeHandler {
 		if (RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)) {
 			byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(otherPeerID);
 			if (requestMessage.length != 0) {
-				System.out.println("Sending a REQUEST for piece from " + otherPeerID + " after just being unchoked");
+				System.out.println(Logger.getTimestamp() + ": Sending a REQUEST for piece from " + otherPeerID + " after just being unchoked");
 				PeerProcess.sendMessageToPeer(otherPeerID, requestMessage);
 			}
 		}

@@ -14,7 +14,7 @@ public class Server extends Thread {
 	@Override
 	public void run() {
 		long startTime = System.currentTimeMillis();
-		System.out.println("" + startTime + ": The server is running.");
+		System.out.println(Logger.getTimestamp() + ": " + startTime + ": The server is running.");
 		try {
 			listener = new ServerSocket(sPort);
 		} catch (IOException e) {
@@ -24,11 +24,11 @@ public class Server extends Thread {
 
 		try {
 			while(PeerProcess.isRunning) {
-				System.out.println("Waiting to accept peer connections...");
+				System.out.println(Logger.getTimestamp() + ": Waiting to accept peer connections...");
 				Client c;
 				try {
 					c = new Client(listener.accept(), false);
-					System.out.println("Peer connected! Starting handshake.");
+					System.out.println(Logger.getTimestamp() + ": Peer connected! Starting handshake.");
 					c.start();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -44,7 +44,7 @@ public class Server extends Thread {
 
 				// PeerProcess.connectionFromNewPeer(c.otherPeerID, c);
 				if (System.currentTimeMillis() > startTime + 120000) {
-					System.out.println("" + System.currentTimeMillis() + ": Stopping server on time.");
+					System.out.println(Logger.getTimestamp() + ": " + System.currentTimeMillis() + ": Stopping server on time.");
 					break;
 				}
 			}
@@ -54,7 +54,7 @@ public class Server extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("The server stopped.");
+			System.out.println(Logger.getTimestamp() + ": The server stopped.");
 		} 
 	}
 }

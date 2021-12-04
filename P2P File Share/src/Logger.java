@@ -21,7 +21,7 @@ public class Logger {
 
     public static void initializeLogger(int peerId) {
         try {
-            System.out.println("Logger created for peer: " + peerId);
+            System.out.println(Logger.getTimestamp() + ": Logger created for peer: " + peerId);
             Logger.clientId = peerId;
             File file = createLog(peerId);
             initializePrintWriter(file);
@@ -43,7 +43,7 @@ public class Logger {
         printWriter = new PrintWriter(fileOutputStream, true);
     }
 
-    public static String getTimeStamp() {
+    public static String getTimestamp() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return timestamp.toString();
     }
@@ -53,20 +53,20 @@ public class Logger {
     }
 
     public static void logReceivedHaveMessage(int fromId, int pieceIndex) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " received the 'have' message from " + fromId + " for the piece " + pieceIndex + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " received the 'have' message from " + fromId + " for the piece " + pieceIndex + ".");
     }
 
     public static void logTcpConnectionTo(int connectionToPeerId) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " makes a connection to Peer " + connectionToPeerId + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " makes a connection to Peer " + connectionToPeerId + ".");
     }
 
     public static void logTcpConnectionFrom(int connectionFromPeerId) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " is connected from Peer " + connectionFromPeerId + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " is connected from Peer " + connectionFromPeerId + ".");
     }
 
     public static void logChangedPreferredNeighbors(Map<String, String> preferredNeighbors) {
         StringBuilder message = new StringBuilder();
-        message.append(getTimeStamp());
+        message.append(getTimestamp());
         message.append(": Peer ");
         message.append(clientId);
         message.append(" has preferred neighbors [");
@@ -80,30 +80,30 @@ public class Logger {
     }
 
     public static void logNewOptimisticallyUnchokedNeighbor(int unchokedNeighbor) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " has the optimistically unchoked neighbor " + unchokedNeighbor + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " has the optimistically unchoked neighbor " + unchokedNeighbor + ".");
     }
 
     public static void logUnchokedBy(int peerId1) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " is unchoked by " + peerId1 + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " is unchoked by " + peerId1 + ".");
     }
 
     public static void logChokedBy(int peerId1) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " is choked by " + peerId1 + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " is choked by " + peerId1 + ".");
     }
 
     public static void logInterestedMessageReceived(int fromId) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " received the 'interested' messaging from " + fromId + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " received the 'interested' messaging from " + fromId + ".");
     }
 
     public static void logNotInterestedMessageReceived(int fromId) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " received the 'not interested' messaging from " + fromId + ".");
+        writeFile(getTimestamp() + ": Peer " + clientId + " received the 'not interested' messaging from " + fromId + ".");
     }
 
     public static void logPieceDownloadComplete(int fromId, int pieceIndex, int numberOfPieces) {
-        writeFile(getTimeStamp() + ": Peer " + clientId + " has downloaded the piece " + pieceIndex + " from " + fromId + "." + " Now the number of pieces it has is " + numberOfPieces);
+        writeFile(getTimestamp() + ": Peer " + clientId + " has downloaded the piece " + pieceIndex + " from " + fromId + "." + " Now the number of pieces it has is " + numberOfPieces);
     }
 
     public static void logFullDownloadComplete() {
-        writeFile(getTimeStamp() + "Peer " + clientId + " has downloaded the complete file.");
+        writeFile(getTimestamp() + "Peer " + clientId + " has downloaded the complete file.");
     }
 }

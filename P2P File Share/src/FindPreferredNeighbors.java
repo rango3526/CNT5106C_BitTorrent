@@ -59,10 +59,10 @@ public class FindPreferredNeighbors extends Thread {
 
 		}
 
-		System.out.println("************* Found preferred neighbors: ************");
+		System.out.println(Logger.getTimestamp() + ": ************* Found preferred neighbors: ************");
 
 		for (Integer peerID : preferredNeighbors) {
-			System.out.println("Peer " + peerID);
+			System.out.println(Logger.getTimestamp() + ": Peer " + peerID);
 		}
 
 		return preferredNeighbors;

@@ -32,7 +32,7 @@ public class PeerProcess {
         // File file = new File(path);
         // try {
         //     file.createNewFile();
-        //     System.out.println("File location is: " + file.getAbsolutePath());
+        //     System.out.println(Logger.getTimestamp() + ": File location is: " + file.getAbsolutePath());
         // } catch (IOException e1) {
         //     e1.printStackTrace();
         // }
@@ -47,12 +47,12 @@ public class PeerProcess {
 
 
         // printWriter.println("Initializing peer...");
-        System.out.println(Logger.getTimeStamp() + ": Initializing peer...");
+        System.out.println(Logger.getTimestamp() + ": : Initializing peer...");
         Logger.initializeLogger(selfClientID);
         Bitfield.init(selfClientID);
         int state = ConfigReader.getStateFromPeerID(selfClientID);
         if (state == 1) {
-            System.out.println("STARTING WITH WHOLE FILE");
+            System.out.println(Logger.getTimestamp() + ": STARTING WITH WHOLE FILE");
             FileHandler.initializePieceMapFromCompleteFile();
             Bitfield.selfStartsWithFile();
         }
@@ -73,7 +73,7 @@ public class PeerProcess {
         fpn = new FindPreferredNeighbors();
         fpn.start();
         // printWriter.println("Done initializing!");
-        System.out.println("Done initializing!");
+        System.out.println(Logger.getTimestamp() + ": Done initializing!");
         try {
             Thread.sleep(450000);
         } catch (InterruptedException e) {
@@ -82,7 +82,7 @@ public class PeerProcess {
         finally {
             isRunning = false;
             try {
-                System.out.println("Stopping server on time...");
+                System.out.println(Logger.getTimestamp() + ": Stopping server on time...");
                 Server.listener.close();
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -92,13 +92,13 @@ public class PeerProcess {
                 client.interrupt();
             }
 
-            System.out.println("PeerProcess stopping on time...");
+            System.out.println(Logger.getTimestamp() + ": PeerProcess stopping on time...");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("PeerProcess stopped.");
+            System.out.println(Logger.getTimestamp() + ": PeerProcess stopped.");
         }
     }
 
@@ -108,22 +108,22 @@ public class PeerProcess {
         for (Integer peerID : peerIDs) {
             try {
                 if (peerID < selfClientID) {
-                    System.out.println("Connecting to peer " + peerID + "...");
+                    System.out.println(Logger.getTimestamp() + ": Connecting to peer " + peerID + "...");
                     // Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
                     Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), Server.sPort);
                     Client c = new Client(connection, true);
                     c.start();
                     allClients.put(peerID, c);
-                    System.out.println("Connected.");
+                    System.out.println(Logger.getTimestamp() + ": Connected.");
                 }
                 else {
-                    System.out.println("Skipping connection to later peer " + peerID);
+                    System.out.println(Logger.getTimestamp() + ": Skipping connection to later peer " + peerID);
                 }
             }
             catch (Exception e) {
                 // printWriter.println("Failed to connect to peer: " + peerID);
     
-                System.out.println("Failed to connect to peer: " + peerID);
+                System.out.println(Logger.getTimestamp() + ": Failed to connect to peer: " + peerID);
                 e.printStackTrace();
             }
         }
@@ -149,7 +149,7 @@ public class PeerProcess {
 		List<Integer> peerIDList = getPeerIDList();
 
         for (Integer peerID : peerIDList) {
-            if (preferredNeighbors.contains(peerID) && ChokeHandler.getChokedNeighbors().contains(peerID))
+            if (preferredNeighbors.contains(peerID))
                 unchokePeer(peerID);
             else if (peerID != OptimisticUnchokeHandler.getOptimisticallyUnchokedNeighbor())
                 chokePeer(peerID);
@@ -170,7 +170,7 @@ public class PeerProcess {
         byte[] haveMessage = HaveHandler.constructHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
-            System.out.println("Sending HAVE message to " + c.otherPeerID);
+            System.out.println(Logger.getTimestamp() + ": Sending HAVE message to " + c.otherPeerID);
             c.sendMessage(haveMessage);
         }
     }

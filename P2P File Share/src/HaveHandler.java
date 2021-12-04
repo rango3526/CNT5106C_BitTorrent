@@ -10,7 +10,7 @@ public class HaveHandler {
 
         // send interested / non-interested message
         boolean interested = RequestHandler.clientNeedsSomePieceFromPeer(fromPeerID);
-        System.out.println("Sending " + (interested ? "" : "NON") + "INTERESTED message to " + fromPeerID);
+        System.out.println(Logger.getTimestamp() + ": Sending " + (interested ? "" : "NON-") + "INTERESTED message to " + fromPeerID);
         PeerProcess.sendMessageToPeer(fromPeerID, InterestHandler.constructInterestMessage(interested));
     }
 

@@ -21,7 +21,7 @@ public class DebugLogger {
 
     public static void initializeLogger(int peerId) {
         try {
-            System.out.println("DEBUG Logger created for peer: " + peerId);
+            System.out.println(Logger.getTimestamp() + ": DEBUG Logger created for peer: " + peerId);
             File file = createLog(peerId);
             initializePrintWriter(file);
             System.setOut(printStream);

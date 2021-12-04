@@ -11,10 +11,10 @@ public class Handshake {
 
 	public static int receivedHandshakeResponseMessage(byte[] handshakeResponseMessage) {
 
-		System.out.println("Receiving handshake response with length " + handshakeResponseMessage.length);
+		System.out.println(Logger.getTimestamp() + ": Receiving handshake response with length " + handshakeResponseMessage.length);
 
 		if (handshakeResponseMessage.length != 32) {
-			System.out.println("Non-handshake is of type: " + ActualMessageHandler.getMsgType(handshakeResponseMessage));
+			System.out.println(Logger.getTimestamp() + ": Non-handshake is of type: " + ActualMessageHandler.getMsgType(handshakeResponseMessage));
 		}
 
 		ByteBuffer byteBuffer = ByteBuffer.wrap(handshakeResponseMessage);

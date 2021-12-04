@@ -53,7 +53,7 @@ public class ConfigReader {
             scan.close();
             return peerIP;
         } catch (Exception e) {
-            // System.out.println("Error reading config file in getIPFromPeerID");
+            // System.out.println(Logger.getTimestamp() + ": Error reading config file in getIPFromPeerID");
             throw new RuntimeException("Error reading config file in getIPFromPeerID:\n" + e.getStackTrace());
         }
     }

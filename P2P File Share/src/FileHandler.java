@@ -20,13 +20,13 @@ public class FileHandler {
     public static synchronized void initializePieceMapFromCompleteFile() {
         File file = new File(FILE_PATH+FILE_NAME);
         if (!file.exists()) {
-            System.out.println("FATAL: System cannot find file that the client should start with");
+            System.out.println(Logger.getTimestamp() + ": FATAL: System cannot find file that the client should start with");
             return;
         }
         
         try {
             byte[] fileBytes = Files.readAllBytes(file.toPath());
-            System.out.println("Given file is " + fileBytes.length + " bytes long");
+            System.out.println(Logger.getTimestamp() + ": Given file is " + fileBytes.length + " bytes long");
             int pieceSize = ConfigReader.getPieceSize();
 
             for (int i = 0; i < fileBytes.length; i+= pieceSize) {
@@ -47,7 +47,7 @@ public class FileHandler {
     }
 
     public static synchronized boolean combinePiecesIntoCompleteFile() {
-        System.out.println("ALL PIECES RECEIVED! Attempting to combine them into file...");
+        System.out.println(Logger.getTimestamp() + ": ALL PIECES RECEIVED! Attempting to combine them into file...");
 
         FileOutputStream fileOutputStream = null;
 
@@ -58,7 +58,7 @@ public class FileHandler {
             
             for (int i = 0; i < maxIndex; i++) {
                 if (!pieceMap.containsKey(i)) {
-                    System.out.println("Tried to combine all piece into complete file, but there was a missing piece at index: " + i);
+                    System.out.println(Logger.getTimestamp() + ": Tried to combine all piece into complete file, but there was a missing piece at index: " + i);
                     return false;
                 }
                 fileOutputStream.write(pieceMap.get(i));
@@ -77,7 +77,7 @@ public class FileHandler {
         }
 
         Logger.logFullDownloadComplete();
-        System.out.println("FILE RECOMBINATION COMPLETE!");
+        System.out.println(Logger.getTimestamp() + ": FILE RECOMBINATION COMPLETE!");
         return true;
     }
 

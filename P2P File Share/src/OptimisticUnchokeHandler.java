@@ -27,7 +27,7 @@ public class OptimisticUnchokeHandler extends Thread {
         if (eligibleNeighbors.isEmpty()) {
             // optimisticallyUnchokedNeighbor = -1;
             // Unsure if this ^^^ is needed
-            System.out.println("No neighbors eligible for optimistic unchoke");
+            System.out.println(Logger.getTimestamp() + ": NO neighbors eligible for OPTIMISTIC UNCHOKE");
             return;
         }
             
@@ -36,7 +36,7 @@ public class OptimisticUnchokeHandler extends Thread {
 
         PeerProcess.unchokePeer(eligibleNeighbors.get(randomEligibleNeighborIndex));
         optimisticallyUnchokedNeighbor = eligibleNeighbors.get(randomEligibleNeighborIndex);
-        System.out.println("Peer " + eligibleNeighbors.get(randomEligibleNeighborIndex) + " OPTIMISTICALLY UNCHOKED");
+        System.out.println(Logger.getTimestamp() + ": Peer " + eligibleNeighbors.get(randomEligibleNeighborIndex) + " OPTIMISTICALLY UNCHOKED");
     }
 
     public static synchronized int getOptimisticallyUnchokedNeighbor() {

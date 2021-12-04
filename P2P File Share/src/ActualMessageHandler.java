@@ -90,7 +90,7 @@ public class ActualMessageHandler
         byteBuffer = byteBuffer.get(msgtypebytes, 0, 1);
         // String msgLengthString = new String(msglengthbytes);
         int type = byteArrayToInt(msgtypebytes);
-        // System.out.println("This message type is: " + type);
+        // System.out.println(Logger.getTimestamp() + ": This message type is: " + type);
 		return type;
     }
 }
