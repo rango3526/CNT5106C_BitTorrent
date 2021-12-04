@@ -9,7 +9,7 @@ public class FindPreferredNeighbors extends Thread {
     public void run() {
 		try {
 			while (PeerProcess.isRunning) {
-				System.out.print("Calculating preferred neighbors...");
+				System.out.println(Logger.getTimestamp() + "Calculating preferred neighbors...");
 				PeerProcess.setPreferredNeighbors(determinePreferredNeighbors());
 				try {
 					Thread.sleep(ConfigReader.getUnchokingInterval()*1000);
@@ -26,6 +26,7 @@ public class FindPreferredNeighbors extends Thread {
 		finally {
 			System.out.println("FindPreferredNeighbors stopped.");
 		}
+		System.out.println("FindPreferredNeighbors stopped (outside loop)");
     }
 
     public static List<Integer> determinePreferredNeighbors() {

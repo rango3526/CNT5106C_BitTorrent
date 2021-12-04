@@ -160,6 +160,7 @@ public class StartRemotePeers {
         peerList.add(new PeerInfo("1003", "lin114-02.cise.ufl.edu"));
         peerList.add(new PeerInfo("1004", "lin114-03.cise.ufl.edu"));
         peerList.add(new PeerInfo("1005", "lin114-04.cise.ufl.edu"));
+        peerList.add(new PeerInfo("1006", "lin114-05.cise.ufl.edu"));
 
         for (PeerInfo remotePeer : peerList) {
             try {

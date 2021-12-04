@@ -149,7 +149,7 @@ public class PeerProcess {
 		List<Integer> peerIDList = getPeerIDList();
 
         for (Integer peerID : peerIDList) {
-            if (preferredNeighbors.contains(peerID))
+            if (preferredNeighbors.contains(peerID) && ChokeHandler.getChokedNeighbors().contains(peerID))
                 unchokePeer(peerID);
             else if (peerID != OptimisticUnchokeHandler.getOptimisticallyUnchokedNeighbor())
                 chokePeer(peerID);

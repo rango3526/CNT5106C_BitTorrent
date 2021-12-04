@@ -26,6 +26,7 @@ public class Logger {
             File file = createLog(peerId);
             initializePrintWriter(file);
         } catch (Exception e) {
+            System.out.println("ERROR IN LOGGER *******************************************");
             e.printStackTrace();
         }
     }
