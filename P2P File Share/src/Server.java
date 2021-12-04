@@ -28,18 +28,20 @@ public class Server extends Thread {
 				Client c;
 				try {
 					c = new Client(listener.accept(), false);
+					System.out.println("Peer connected! Starting handshake.");
+					c.start();
 				} catch (IOException e) {
 					e.printStackTrace();
 					break;
 				}
-				System.out.println("Peer connected! Starting handshake.");
-				c.start();
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					break;
-				}
+
+				// try {
+				// 	Thread.sleep(3000);
+				// } catch (InterruptedException e) {
+				// 	e.printStackTrace();
+				// 	break;
+				// }
+
 				// PeerProcess.connectionFromNewPeer(c.otherPeerID, c);
 				if (System.currentTimeMillis() > startTime + 120000) {
 					System.out.println("" + System.currentTimeMillis() + ": Stopping server on time.");

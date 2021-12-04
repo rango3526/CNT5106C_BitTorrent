@@ -9,8 +9,9 @@ public class HaveHandler {
         Bitfield.peerReceivedPiece(fromPeerID, haveIndex);
 
         // send interested / non-interested message
-        System.out.println("Sending INTEREST(or not) message to " + fromPeerID);
-        PeerProcess.sendMessageToPeer(fromPeerID, InterestHandler.constructInterestMessage(RequestHandler.clientNeedsSomePieceFromPeer(fromPeerID)));
+        boolean interested = RequestHandler.clientNeedsSomePieceFromPeer(fromPeerID);
+        System.out.println("Sending " + (interested ? "" : "NON") + "INTERESTED message to " + fromPeerID);
+        PeerProcess.sendMessageToPeer(fromPeerID, InterestHandler.constructInterestMessage(interested));
     }
 
     public static byte[] constructHaveMessage(int pieceIndex) {

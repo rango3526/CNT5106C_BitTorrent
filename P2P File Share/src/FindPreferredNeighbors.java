@@ -12,13 +12,17 @@ public class FindPreferredNeighbors extends Thread {
             try {
                 Thread.sleep(ConfigReader.getUnchokingInterval()*1000);
             } catch (InterruptedException e) {
-                System.out.print("Preferred neighbors sleep interrupted.");
+                System.out.print("FATAL: Preferred neighbors sleep interrupted.");
                 e.printStackTrace();
             }
         }
     }
 
     public static List<Integer> determinePreferredNeighbors() {
+		RequestHandler.clearPiecesAlreadyRequestedList();
+
+		List<Integer> preferredNeighbors = new ArrayList<>();
+
 		if (Bitfield.hasAllPieces) {
 			// Randomly choose preferred neighbors
 			List<Integer> interestedPeers = new ArrayList<>();
@@ -27,37 +31,41 @@ public class FindPreferredNeighbors extends Thread {
 					interestedPeers.add(peerID);
 			}
 
-			List<Integer> preferredPeers = new ArrayList<>();
 			Random r = new Random();
 			for (int i = 0; i < ConfigReader.getNumPreferredNeighbors(); i++) {
 				if (interestedPeers.isEmpty())
 					break;
 				int thisPeer = r.nextInt(interestedPeers.size());
-				preferredPeers.add(interestedPeers.get(thisPeer));
+				preferredNeighbors.add(interestedPeers.get(thisPeer));
 				interestedPeers.remove(thisPeer);
 			}
 
-			return preferredPeers;
 		}
 		else {
 			// Choose preferred neighbors based on download speeds
 			List<PeerInfoDownloadSpeed> peerDownloadSpeeds = new ArrayList<>();
 			for (int peerID : PeerProcess.getPeerIDList()) {
 				if (peerID != PeerProcess.selfClientID && InterestHandler.peerIsInterestedInClient(peerID))
-					peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.getDownloadRateOfPeer(peerID)));
+				peerDownloadSpeeds.add(new PeerInfoDownloadSpeed(peerID, PeerProcess.getDownloadRateOfPeer(peerID)));
 			}
 			peerDownloadSpeeds.sort((a, b) -> Double.compare(b.downloadRate, a.downloadRate));
-
-			List<PeerInfoDownloadSpeed> preferredNeighbors = peerDownloadSpeeds.subList(0,
-					ConfigReader.getNumPreferredNeighbors() > peerDownloadSpeeds.size() ? peerDownloadSpeeds.size() : ConfigReader.getNumPreferredNeighbors());
-	
-			List<Integer> peerIDs = new ArrayList<>();
-			for (PeerInfoDownloadSpeed pids : preferredNeighbors) {
-				peerIDs.add(pids.peerID);
+			
+			List<PeerInfoDownloadSpeed> preferredNeighborSpeeds = peerDownloadSpeeds.subList(0,
+			ConfigReader.getNumPreferredNeighbors() > peerDownloadSpeeds.size() ? peerDownloadSpeeds.size() : ConfigReader.getNumPreferredNeighbors());
+			
+			for (PeerInfoDownloadSpeed pids : preferredNeighborSpeeds) {
+				preferredNeighbors.add(pids.peerID);
 			}
 
-			return peerIDs;
 		}
+
+		System.out.println("************* Found preferred neighbors: ************");
+
+		for (Integer peerID : preferredNeighbors) {
+			System.out.println("Peer " + peerID);
+		}
+
+		return preferredNeighbors;
 	}
 
     static class PeerInfoDownloadSpeed {

@@ -1,8 +1,10 @@
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import javax.sql.rowset.spi.SyncResolver;
+
 public class RequestHandler {
-	static volatile BitSet bitsWeHaveAlreadyRequested = new BitSet();
+	static volatile BitSet piecesWeHaveAlreadyRequested = new BitSet();
 
 	public static synchronized int findNeededPieceIndexFromPeer(int peerID) {
 		BitSet ourBitfield = Bitfield.getSelfBitfield();
@@ -41,7 +43,7 @@ public class RequestHandler {
 		byte[] pieceIndexBytes = ActualMessageHandler.convertIntTo4Bytes(pieceIndex);
 		byte[] message = ActualMessageHandler.addHeader(pieceIndexBytes, ActualMessageHandler.REQUEST);
 
-		bitsWeHaveAlreadyRequested.set(pieceIndex, true);
+		piecesWeHaveAlreadyRequested.set(pieceIndex, true);
 		// TODO: consider case where piece is not received (other Peer re-decides optimal neighbors); must reset this value
 
 		return message;
@@ -55,7 +57,7 @@ public class RequestHandler {
         if (Bitfield.clientHasThisPiece(pieceIndex))
 			return false;
 		
-		if (bitsWeHaveAlreadyRequested.get(pieceIndex))
+		if (piecesWeHaveAlreadyRequested.get(pieceIndex))
 			return false;
 		
 		return true;
@@ -71,9 +73,18 @@ public class RequestHandler {
 	}
 
 	public static synchronized void receivedRequestMessage(int peerID, byte[] msgPayload) {
+		if (ChokeHandler.getChokedNeighbors().contains(peerID)) {
+			System.out.println("REQUEST message from peer " + peerID + " will be ignored because it is choked.");
+			return;
+		}
+
 		int pieceIndex = ActualMessageHandler.byteArrayToInt(msgPayload);
 		System.out.println("Sending piece message...");
 		PeerProcess.sendMessageToPeer(peerID, PieceHandler.constructPieceMessage(pieceIndex));
 		System.out.println("Piece message sent!");
+	}
+
+	public static synchronized void clearPiecesAlreadyRequestedList() {
+		piecesWeHaveAlreadyRequested.clear();
 	}
 }

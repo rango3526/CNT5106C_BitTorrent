@@ -75,13 +75,14 @@ public class PeerProcess {
         // printWriter.println("Done initializing!");
         System.out.println("Done initializing!");
         try {
-            Thread.sleep(120000);
+            Thread.sleep(450000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         finally {
             isRunning = false;
             try {
+                System.out.println("Stopping server on time...");
                 Server.listener.close();
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -91,7 +92,7 @@ public class PeerProcess {
                 client.interrupt();
             }
 
-            System.out.println("PeerProcess stopping...");
+            System.out.println("PeerProcess stopping on time...");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
