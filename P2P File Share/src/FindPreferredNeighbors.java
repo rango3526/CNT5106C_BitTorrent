@@ -7,15 +7,25 @@ public class FindPreferredNeighbors extends Thread {
 
     @Override
     public void run() {
-        while (PeerProcess.isRunning) {
-            PeerProcess.setPreferredNeighbors(determinePreferredNeighbors());
-            try {
-                Thread.sleep(ConfigReader.getUnchokingInterval()*1000);
-            } catch (InterruptedException e) {
-                System.out.print("FATAL: Preferred neighbors sleep interrupted.");
-                e.printStackTrace();
-            }
-        }
+		try {
+			while (PeerProcess.isRunning) {
+				System.out.print("Calculating preferred neighbors...");
+				PeerProcess.setPreferredNeighbors(determinePreferredNeighbors());
+				try {
+					Thread.sleep(ConfigReader.getUnchokingInterval()*1000);
+				} catch (InterruptedException e) {
+					System.out.print("FATAL: Preferred neighbors sleep interrupted.");
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (Exception e) {
+			System.out.println("Error in FinderPreferredNeighbors");
+			e.printStackTrace();
+		}
+		finally {
+			System.out.println("FindPreferredNeighbors stopped.");
+		}
     }
 
     public static List<Integer> determinePreferredNeighbors() {
@@ -35,9 +45,9 @@ public class FindPreferredNeighbors extends Thread {
 			for (int i = 0; i < ConfigReader.getNumPreferredNeighbors(); i++) {
 				if (interestedPeers.isEmpty())
 					break;
-				int thisPeer = r.nextInt(interestedPeers.size());
-				preferredNeighbors.add(interestedPeers.get(thisPeer));
-				interestedPeers.remove(thisPeer);
+				int thisPeerIndex = r.nextInt(interestedPeers.size());
+				preferredNeighbors.add(interestedPeers.get(thisPeerIndex));
+				interestedPeers.remove(thisPeerIndex);
 			}
 
 		}

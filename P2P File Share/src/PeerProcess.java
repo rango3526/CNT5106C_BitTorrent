@@ -81,8 +81,8 @@ public class PeerProcess {
         }
         finally {
             isRunning = false;
+            System.out.println(Logger.getTimestamp() + ": Stopping server on time...");
             try {
-                System.out.println(Logger.getTimestamp() + ": Stopping server on time...");
                 Server.listener.close();
             } catch (IOException e1) {
                 e1.printStackTrace();

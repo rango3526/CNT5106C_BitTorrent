@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Server extends Thread {
 
-	public static final int sPort = 6038;   //The server will be listening on this port number
+	public static final int sPort = 6039;   //The server will be listening on this port number
 	public static volatile int selfClientID = -1;
 	public static volatile ServerSocket listener;
 

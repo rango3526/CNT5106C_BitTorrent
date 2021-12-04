@@ -66,12 +66,12 @@ public class Client extends Thread {
 						break;
 					}
 
-					try {
-						Thread.sleep(25);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						break;
-					}
+					// try {
+					// 	Thread.sleep(25);
+					// } catch (InterruptedException e) {
+					// 	e.printStackTrace();
+					// 	break;
+					// }
 				}
 			} catch (ClassNotFoundException classnot) {
 				System.out.println(Logger.getTimestamp() + ": Data received in unknown format");
@@ -113,35 +113,35 @@ public class Client extends Thread {
 
 		switch (messageType) {
 		case 0:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": CHOKE");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": CHOKE");
 			ChokeHandler.receivedChokeMessage(otherPeerID);
 			break;
 		case 1:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": UNCHOKE");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": UNCHOKE");
 			ChokeHandler.receivedUnchokeMessage(otherPeerID);
 			break;
 		case 2:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": INTEREST");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": INTEREST");
 			InterestHandler.receivedInterestedMessage(otherPeerID);
 			break;
 		case 3:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": NON-INTEREST");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": NON-INTEREST");
 			InterestHandler.receivedUninterestedMessage(otherPeerID);
 			break;
 		case 4:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": HAVE");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": HAVE");
 			HaveHandler.receivedHaveMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		case 5:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": BITFIELD");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": BITFIELD");
 			Bitfield.receivedBitfieldMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		case 6:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": REQUEST");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": REQUEST");
 			RequestHandler.receivedRequestMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		case 7:
-			System.out.println(Logger.getTimestamp() + ": : Message from " + otherPeerID + ": PIECE");
+			System.out.println(Logger.getTimestamp() + ": Message from " + otherPeerID + ": PIECE");
 			PieceHandler.receivedPieceMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		default:
