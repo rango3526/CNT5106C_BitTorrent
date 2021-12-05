@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.jcraft.jsch.Channel;
@@ -155,12 +156,18 @@ public class StartRemotePeers {
          * initially have it under the 'peer_[peerID]' folder.
          */
 
-        peerList.add(new PeerInfo("1001", "lin114-00.cise.ufl.edu"));
-        peerList.add(new PeerInfo("1002", "lin114-01.cise.ufl.edu"));
-        peerList.add(new PeerInfo("1003", "lin114-02.cise.ufl.edu"));
-        peerList.add(new PeerInfo("1004", "lin114-03.cise.ufl.edu"));
-        peerList.add(new PeerInfo("1005", "lin114-04.cise.ufl.edu"));
-        peerList.add(new PeerInfo("1006", "lin114-05.cise.ufl.edu"));
+        List<Integer> allPeerIDs = ConfigReader.getAllPeerIDs();
+
+        for (int peerID : allPeerIDs) {
+            peerList.add(new PeerInfo("" + peerID, ConfigReader.getIPFromPeerID(peerID).getHostAddress()));
+        }
+
+        // peerList.add(new PeerInfo("1001", "lin114-00.cise.ufl.edu"));
+        // peerList.add(new PeerInfo("1002", "lin114-06.cise.ufl.edu"));
+        // peerList.add(new PeerInfo("1003", "lin114-02.cise.ufl.edu"));
+        // peerList.add(new PeerInfo("1004", "lin114-03.cise.ufl.edu"));
+        // peerList.add(new PeerInfo("1005", "lin114-07.cise.ufl.edu"));
+        // peerList.add(new PeerInfo("1006", "lin114-05.cise.ufl.edu"));
 
         for (PeerInfo remotePeer : peerList) {
             try {
