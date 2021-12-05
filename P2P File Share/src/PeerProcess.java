@@ -49,25 +49,19 @@ public class PeerProcess {
         // printWriter.println("Initializing peer...");
         System.out.println(Logger.getTimestamp() + ": : Initializing peer...");
         Logger.initializeLogger(selfClientID);
+
         Bitfield.init(selfClientID);
         int state = ConfigReader.getStateFromPeerID(selfClientID);
-        if (state == 1) {
-            System.out.println(Logger.getTimestamp() + ": STARTING WITH WHOLE FILE");
-            FileHandler.initializePieceMapFromCompleteFile();
-            Bitfield.selfStartsWithFile();
-        }
+        FileHandler.init(selfClientID, state == 1);
+
         startServer();
         try {
-            Thread.sleep(2000);
+            Thread.sleep(15000);     // Sleep here because all servers start in parallel-ish and need time before connecting to each other
         } catch (InterruptedException e2) {
             e2.printStackTrace();
         }
         connectToPeers();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e2) {
-            e2.printStackTrace();
-        }
+
         ouh = new OptimisticUnchokeHandler();
         ouh.start();
         fpn = new FindPreferredNeighbors();
@@ -80,25 +74,8 @@ public class PeerProcess {
             e.printStackTrace();
         }
         finally {
-            isRunning = false;
-            System.out.println(Logger.getTimestamp() + ": Stopping server on time...");
-            try {
-                Server.listener.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            
-            for (Client client: allClients.values()) {
-                client.interrupt();
-            }
-
-            System.out.println(Logger.getTimestamp() + ": PeerProcess stopping on time...");
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println(Logger.getTimestamp() + ": PeerProcess stopped.");
+            System.out.println(Logger.getTimestamp() + ": Process has reached the allotted running time. Shutting down all processes...");
+            stopAllProcesses();
         }
     }
 
@@ -110,14 +87,14 @@ public class PeerProcess {
                 if (peerID < selfClientID) {
                     System.out.println(Logger.getTimestamp() + ": Connecting to peer " + peerID + "...");
                     // Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
-                    Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), Server.sPort);
+                    Socket connection = new Socket(ConfigReader.getIPFromPeerID(peerID), ConfigReader.getPortFromPeerID(peerID));
                     Client c = new Client(connection, true);
                     c.start();
                     allClients.put(peerID, c);
-                    System.out.println(Logger.getTimestamp() + ": Connected.");
+                    System.out.println(Logger.getTimestamp() + ": TCP connection to peer " + peerID + " established.");
                 }
                 else {
-                    System.out.println(Logger.getTimestamp() + ": Skipping connection to later peer " + peerID);
+                    // System.out.println(Logger.getTimestamp() + ": Skipping connection to later peer " + peerID);
                 }
             }
             catch (Exception e) {
@@ -129,23 +106,25 @@ public class PeerProcess {
         }
     }
 
-    public static synchronized List<Integer> getPeerIDList() {
+    public static List<Integer> getPeerIDList() {
         return Arrays.asList(allClients.keySet().toArray(new Integer[0]));
     }
 
-    public static synchronized double getDownloadRateOfPeer(int peerID) {
+    public static double getDownloadRateOfPeer(int peerID) {
         return allClients.get(peerID).getDownloadRateInKBps();
     }
 
-    public static synchronized void unchokePeer(int peerID) {
+    public static void unchokePeer(int peerID) {
         allClients.get(peerID).unchokePeer();
     }
 
-    public static synchronized void chokePeer(int peerID) {
+    public static void chokePeer(int peerID) {
         allClients.get(peerID).chokePeer();
     }
 
-    public static synchronized void setPreferredNeighbors(List<Integer> preferredNeighbors) {
+    public static void setPreferredNeighbors(List<Integer> preferredNeighbors) {
+        Logger.logChangedPreferredNeighbors(preferredNeighbors);
+
 		List<Integer> peerIDList = getPeerIDList();
 
         for (Integer peerID : peerIDList) {
@@ -162,11 +141,11 @@ public class PeerProcess {
         server.start();
     }
 
-    public static synchronized void connectionFromNewPeer(int peerID, Client c) {
+    public static void connectionFromNewPeer(int peerID, Client c) {
         allClients.put(peerID, c);
     }
 
-    public static synchronized void broadcastHaveMessage(int pieceIndex) {
+    public static void broadcastHaveMessage(int pieceIndex) {
         byte[] haveMessage = HaveHandler.constructHaveMessage(pieceIndex);
         
         for (Client c : allClients.values()) {
@@ -175,8 +154,35 @@ public class PeerProcess {
         }
     }
 
-    public static synchronized void sendMessageToPeer(int peerID, byte[] message) {
+    public static void sendMessageToPeer(int peerID, byte[] message) {
         allClients.get(peerID).sendMessage(message);
+    }
+
+    public static synchronized void pieceSharingHasCompleted() {
+        System.out.println(Logger.getTimestamp() + ": ALL PIECE SHARING IS COMPLETE! Stopping all processes...");
+        stopAllProcesses();
+    }
+
+    public static synchronized void stopAllProcesses() {
+        isRunning = false;
+        System.out.println(Logger.getTimestamp() + ": Stopping server...");
+        try {
+            Server.listener.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        
+        for (Client client: allClients.values()) {
+            client.interrupt();
+        }
+
+        System.out.println(Logger.getTimestamp() + ": PeerProcess stopping...");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Logger.getTimestamp() + ": PeerProcess stopped.");
     }
 }
 

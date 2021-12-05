@@ -65,17 +65,17 @@ public class Logger {
         writeFile(getTimestamp() + ": Peer " + clientId + " is connected from Peer " + connectionFromPeerId + ".");
     }
 
-    public static void logChangedPreferredNeighbors(Map<String, String> preferredNeighbors) {
+    public static void logChangedPreferredNeighbors(List<Integer> preferredNeighbors) {
         StringBuilder message = new StringBuilder();
         message.append(getTimestamp());
         message.append(": Peer ");
         message.append(clientId);
         message.append(" has preferred neighbors [");
         String separator = "";
-        for (String remotePeerId: preferredNeighbors.values()) {
+        for (int remotePeerId : preferredNeighbors) {
             message.append(separator);
             separator = ", ";
-            message.append(remotePeerId);
+            message.append("" + remotePeerId);
         }
         writeFile(message.toString() + "].");
     }
@@ -105,6 +105,6 @@ public class Logger {
     }
 
     public static void logFullDownloadComplete() {
-        writeFile(getTimestamp() + "Peer " + clientId + " has downloaded the complete file.");
+        writeFile(getTimestamp() + ": Peer " + clientId + " has downloaded the complete file.");
     }
 }

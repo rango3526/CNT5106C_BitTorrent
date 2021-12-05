@@ -16,6 +16,7 @@ public class Bitfield {
 
     public static void init(int selfClientID) {
         if (!initialized) {
+            System.out.println("Initializing BitField...");
             Bitfield.maxPieceAmt = calculatePieceAmt();
             Bitfield.selfClientID = selfClientID;
             
@@ -23,7 +24,7 @@ public class Bitfield {
 
             for (Integer peerID : allPeerIDs) {
                 int pieceAmt = Bitfield.calculatePieceAmt();
-                System.out.println(Logger.getTimestamp() + ": Create bitset size " + pieceAmt + " for peer: " + peerID);
+                // System.out.println(Logger.getTimestamp() + ": Create bitset size " + pieceAmt + " for peer: " + peerID);
                 BitSet thisBitSet = new BitSet(pieceAmt);
                 for (int i = 0; i < pieceAmt; i++) {
                     thisBitSet.set(i, false);
@@ -32,6 +33,8 @@ public class Bitfield {
             }
             
             initialized = true;
+
+            System.out.println("Done initializing BitField");
         }
     }
 
@@ -50,6 +53,20 @@ public class Bitfield {
 
     public static void peerReceivedPiece(int peerID, int pieceIndex) {
         bitfields.get(peerID).set(pieceIndex, true);
+
+        if (allPeersHaveAllPieces()) {
+            PeerProcess.pieceSharingHasCompleted();
+        }
+    }
+
+    public static boolean allPeersHaveAllPieces() {
+        for (BitSet bitfield : bitfields.values()) {
+            if (bitfield.cardinality() < calculatePieceAmt()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void selfReceivedPiece(int pieceIndex) {

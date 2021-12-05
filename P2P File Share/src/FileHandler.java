@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -9,16 +10,50 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FileHandler {
-    volatile static ConcurrentHashMap<Integer, byte[]> pieceMap = new ConcurrentHashMap<>();
-    public static final String FILE_PATH = "./FileToShare/";
-    public static final String FILE_NAME = ConfigReader.getFileName();
+    public static final String ORIGINAL_FILE_PATH = "./FileToShare/";
+    public static final String ORIGINAL_FILE_NAME = ConfigReader.getFileName();
+    public static volatile String PIECE_FILE_PREFIX = ""; // updated in init()
 
     public static byte[] getFilePiece(int pieceIndex) {
-        return pieceMap.get(pieceIndex);
+        File pieceFile = new File(PIECE_FILE_PREFIX + pieceIndex);
+        if (!pieceFile.exists()) {
+            throw new RuntimeException("Piece file not found even though it was requested");
+        }
+
+        byte[] piece = new byte[0];
+
+        try {
+            piece = Files.readAllBytes(pieceFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return piece;
     }
 
-    public static synchronized void initializePieceMapFromCompleteFile() {
-        File file = new File(FILE_PATH+FILE_NAME);
+    public static void init(int clientID, boolean hasCompleteFile) {
+        PIECE_FILE_PREFIX = "./peer_" + clientID + "/";
+
+        File dir = new File(PIECE_FILE_PREFIX);
+        if (!dir.exists())
+            dir.mkdir();
+
+        for(File file: dir.listFiles()) {
+            if (!file.isDirectory()) {
+                // Delete any piece files leftover from a previous run
+                file.delete();
+            }
+        }
+
+        if (hasCompleteFile) {
+            System.out.println(Logger.getTimestamp() + ": STARTING WITH WHOLE FILE");
+            initializePieceMapFromCompleteFile();
+            Bitfield.selfStartsWithFile();
+        }
+    }
+
+    private static synchronized void initializePieceMapFromCompleteFile() {
+        File file = new File(ORIGINAL_FILE_PATH+ORIGINAL_FILE_NAME);
         if (!file.exists()) {
             System.out.println(Logger.getTimestamp() + ": FATAL: System cannot find file that the client should start with");
             return;
@@ -36,7 +71,7 @@ public class FileHandler {
                 if (pieceBytesEndIndex > fileBytes.length)
                     pieceBytesEndIndex = fileBytes.length;
 
-                pieceMap.put(pieceIndex, Arrays.copyOfRange(fileBytes, i, pieceBytesEndIndex));
+                storePiece(pieceIndex, Arrays.copyOfRange(fileBytes, i, pieceBytesEndIndex));
             }
 
             
@@ -47,21 +82,22 @@ public class FileHandler {
     }
 
     public static synchronized boolean combinePiecesIntoCompleteFile() {
+        Logger.logFullDownloadComplete();
         System.out.println(Logger.getTimestamp() + ": ALL PIECES RECEIVED! Attempting to combine them into file...");
 
         FileOutputStream fileOutputStream = null;
 
         try {
-            fileOutputStream = new FileOutputStream(new File(FILE_PATH + "NEW_" + FILE_NAME));
+            fileOutputStream = new FileOutputStream(new File(PIECE_FILE_PREFIX + "NEW_" + ORIGINAL_FILE_NAME));
 
             int maxIndex = Bitfield.calculatePieceAmt() - 1;
             
             for (int i = 0; i < maxIndex; i++) {
-                if (!pieceMap.containsKey(i)) {
+                if (!havePieceFile(i)) {
                     System.out.println(Logger.getTimestamp() + ": Tried to combine all piece into complete file, but there was a missing piece at index: " + i);
                     return false;
                 }
-                fileOutputStream.write(pieceMap.get(i));
+                fileOutputStream.write(getFilePiece(i));
             }
         }
         catch (Exception e) {
@@ -76,12 +112,29 @@ public class FileHandler {
             }
         }
 
-        Logger.logFullDownloadComplete();
         System.out.println(Logger.getTimestamp() + ": FILE RECOMBINATION COMPLETE!");
         return true;
     }
 
-    public static synchronized void addPiece(int pieceIndex, byte[] piece) {
-        pieceMap.put(pieceIndex, piece);
+    public static synchronized void storePiece(int pieceIndex, byte[] piece) {
+        File pieceFile = new File(PIECE_FILE_PREFIX + pieceIndex);
+
+        if (pieceFile.exists()) {
+            System.out.println("Trying to store a piece that we already have");
+            return;
+        }
+
+        try {
+            pieceFile.createNewFile();
+            Files.write(pieceFile.toPath(), piece);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static synchronized boolean havePieceFile(int pieceIndex) {
+        File pieceFile = new File(PIECE_FILE_PREFIX + pieceIndex);
+
+        return pieceFile.exists();
     }
 }

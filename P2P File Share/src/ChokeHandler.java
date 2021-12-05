@@ -1,21 +1,24 @@
 import java.util.*;
 
 public class ChokeHandler {
-	volatile static ArrayList<Integer> clientIsChokedBy = new ArrayList<>();
-	volatile static ArrayList<Integer> neighborsChokedByClient = new ArrayList<>();
+	volatile static List<Integer> clientIsChokedBy = Collections.synchronizedList(new ArrayList<>());
+	volatile static List<Integer> neighborsChokedByClient = Collections.synchronizedList(new ArrayList<>());
 
 	public static synchronized List<Integer> getChokedNeighbors() {
 		return new ArrayList<>(neighborsChokedByClient);
 	}
 
 	public static synchronized void receivedChokeMessage(int otherPeerID) {
+		Logger.logChokedBy(otherPeerID);
+		
 		if (!clientIsChokedBy.contains(otherPeerID)) {
-			Logger.logChokedBy(otherPeerID);
 			clientIsChokedBy.add(otherPeerID);
 		}
 	}
 
 	public static synchronized void receivedUnchokeMessage(int otherPeerID) {
+		Logger.logUnchokedBy(otherPeerID);
+
 		if (RequestHandler.clientNeedsSomePieceFromPeer(otherPeerID)) {
 			byte[] requestMessage = RequestHandler.constructRequestMessageAndChooseRandomPiece(otherPeerID);
 			if (requestMessage.length != 0) {
@@ -25,7 +28,6 @@ public class ChokeHandler {
 		}
 		
 		if (clientIsChokedBy.contains(otherPeerID)) {
-			Logger.logUnchokedBy(otherPeerID);
 			clientIsChokedBy.remove(Integer.valueOf(otherPeerID));
 		}
 	}

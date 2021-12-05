@@ -18,7 +18,7 @@ public class RequestHandler {
 
 		Random r = new Random();
 
-		int numTriesLeft = Bitfield.calculatePieceAmt();
+		int numTriesLeft = 10;
 		while (numTriesLeft > 0) {
 			int randomPick = r.nextInt(lackingPieces.cardinality()) + 1;
 			// System.out.println(Logger.getTimestamp() + ": ************************** Random pick: " + randomPick);
@@ -35,21 +35,22 @@ public class RequestHandler {
 			numTriesLeft -= 1;
 		}
 
-		return -1; // there are no pieces left, we should have all pieces (or we have all except
-					// ones we've requested)
+		System.out.println("Failed to randomly select a piece; choosing the first available piece instead");
+
+		return lackingPieces.nextSetBit(0); 
+		// Really unlikely that we reach this spot, but this return is a backup (it's not random, but it should be fine)
 	}
 
-	public static synchronized byte[] constructRequestMessage(int pieceIndex) {
+	public static byte[] constructRequestMessage(int pieceIndex) {
 		byte[] pieceIndexBytes = ActualMessageHandler.convertIntTo4Bytes(pieceIndex);
 		byte[] message = ActualMessageHandler.addHeader(pieceIndexBytes, ActualMessageHandler.REQUEST);
 
 		piecesWeHaveAlreadyRequested.set(pieceIndex, true);
-		// TODO: consider case where piece is not received (other Peer re-decides optimal neighbors); must reset this value
 
 		return message;
 	}
 
-	public static synchronized boolean clientNeedsSomePieceFromPeer(int peerID) {
+	public static boolean clientNeedsSomePieceFromPeer(int peerID) {
 		return findNeededPieceIndexFromPeer(peerID) != -1;
 	}
 
@@ -63,7 +64,7 @@ public class RequestHandler {
 		return true;
     }
 
-	public static synchronized byte[] constructRequestMessageAndChooseRandomPiece(int peerID) {
+	public static byte[] constructRequestMessageAndChooseRandomPiece(int peerID) {
 		int pieceIndex = findNeededPieceIndexFromPeer(peerID);
 		if (pieceIndex == -1) {
 			System.out.println(Logger.getTimestamp() + ": FATAL: Cannot find the piece client needs from peer: " + peerID);
@@ -72,19 +73,19 @@ public class RequestHandler {
 		return constructRequestMessage(pieceIndex);
 	}
 
-	public static synchronized void receivedRequestMessage(int peerID, byte[] msgPayload) {
+	public static void receivedRequestMessage(int peerID, byte[] msgPayload) {
 		if (ChokeHandler.getChokedNeighbors().contains(peerID)) {
 			System.out.println(Logger.getTimestamp() + ": REQUEST message from peer " + peerID + " will be ignored because it is choked.");
 			return;
 		}
 
 		int pieceIndex = ActualMessageHandler.byteArrayToInt(msgPayload);
-		System.out.println(Logger.getTimestamp() + ": Sending piece message...");
+		System.out.println(Logger.getTimestamp() + ": Sending piece message (index " + pieceIndex + ") to " + peerID + "...");
 		PeerProcess.sendMessageToPeer(peerID, PieceHandler.constructPieceMessage(pieceIndex));
-		System.out.println(Logger.getTimestamp() + ": Piece message sent!");
+		System.out.println(Logger.getTimestamp() + ": Piece (index " + pieceIndex + ") message sent!");
 	}
 
-	public static synchronized void clearPiecesAlreadyRequestedList() {
+	public static void clearPiecesAlreadyRequestedList() {
 		piecesWeHaveAlreadyRequested.clear();
 	}
 }

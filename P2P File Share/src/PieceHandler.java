@@ -8,7 +8,7 @@ public class PieceHandler {
     public static synchronized void receivedPieceMessage(int peerID, byte[] msgPayload) {
         int pieceIndex = getPieceIndexFromPiecePayload(msgPayload);
         Logger.logPieceDownloadComplete(peerID, pieceIndex, Bitfield.getNumberOfPiecesClientHas() + 1);
-        FileHandler.addPiece(pieceIndex, getPieceBytesFromPiecePayload(msgPayload));
+        FileHandler.storePiece(pieceIndex, getPieceBytesFromPiecePayload(msgPayload));
         Bitfield.selfReceivedPiece(pieceIndex);
         PeerProcess.broadcastHaveMessage(pieceIndex);
 
@@ -17,6 +17,9 @@ public class PieceHandler {
             if (requestMessage.length != 0) {
                 System.out.println(Logger.getTimestamp() + ": Sending ANOTHER request for piece from " + peerID);
                 PeerProcess.sendMessageToPeer(peerID, requestMessage);
+            }
+            else {
+                throw new RuntimeException("Generated request message was empty");
             }
         }
     }

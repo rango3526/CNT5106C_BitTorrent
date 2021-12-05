@@ -10,8 +10,8 @@ public class Client extends Thread {
 	volatile int selfClientID = -1; // This own client's ID
 	public volatile int otherPeerID = -1; // ID of peer we're connecting to
 
-	volatile AtomicLong cumulativeDownloadTimeNanoseconds = new AtomicLong(0);
-	volatile AtomicLong cumulativeBytesDownloaded = new AtomicLong(0);
+	volatile AtomicLong cumulativeDownloadTimeNanoseconds = new AtomicLong(1);
+	volatile AtomicLong cumulativeBytesDownloaded = new AtomicLong(1);
 
 	volatile boolean shouldInitiateHandshake = false;
 
@@ -38,18 +38,18 @@ public class Client extends Thread {
 					Logger.logTcpConnectionTo(this.otherPeerID);
 					// TODO: make sure this looks right
 				} else {
-					System.out.println(Logger.getTimestamp() + ": Waiting for handshake initiation from " + otherPeerID);
+					System.out.println(Logger.getTimestamp() + ": Waiting for handshake initiation from " + (otherPeerID == -1 ? "unknown peer" : otherPeerID));
 					this.otherPeerID = waitForAndHandleHandshake();
-					System.out.println(Logger.getTimestamp() + ": Sending handhshake reponse to " + otherPeerID);
+					System.out.println(Logger.getTimestamp() + ": Received handshake initiation from " + otherPeerID + ". Sending handhshake reponse...");
 					sendMessage(Handshake.constructHandshakeMessage(selfClientID));
 					Logger.logTcpConnectionFrom(this.otherPeerID);
 					PeerProcess.connectionFromNewPeer(otherPeerID, this);
 				}
+				System.out.println(Logger.getTimestamp() + ": Peer " + otherPeerID + " has finished handshaking!");
 
 				System.out.println(Logger.getTimestamp() + ": Sending BITFIELD message to " + otherPeerID);
 				sendMessage(Bitfield.constructBitfieldMessage());
 
-				System.out.println(Logger.getTimestamp() + ": Peer " + otherPeerID + " has finished handshaking!");
 
 				while (PeerProcess.isRunning) {
 					try {
@@ -99,6 +99,7 @@ public class Client extends Thread {
 
 	// send a message to the output stream
 	void sendMessage(byte[] msg) {
+		// System.out.println(Logger.getTimestamp() + "Sending message...");
 		try {
 			// stream write the message
 			out.writeObject(msg);
@@ -106,9 +107,10 @@ public class Client extends Thread {
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		}
+		// System.out.println(Logger.getTimestamp() + "Message sent!");
 	}
 
-	synchronized void handleAnyMessage(byte[] msg) {
+	void handleAnyMessage(byte[] msg) {
 		int messageType = ActualMessageHandler.getMsgType(msg);
 
 		switch (messageType) {
@@ -145,6 +147,7 @@ public class Client extends Thread {
 			PieceHandler.receivedPieceMessage(otherPeerID, ActualMessageHandler.extractPayload(msg));
 			break;
 		default:
+			System.out.println("FATAL: Message received has invalid type");
 			throw new RuntimeException("FATAL: Message received has invalid type");
 		}
 	}
@@ -160,31 +163,31 @@ public class Client extends Thread {
 		return obj;
 	}
 
-	synchronized int getPortFromPeerID(int id) { // use the config file
+	int getPortFromPeerID(int id) { // use the config file
 		return ConfigReader.getPortFromPeerID(id);
 	}
 
-	synchronized String getIPFromPeerID(int id) { // use the config file
+	String getIPFromPeerID(int id) { // use the config file
 		return ConfigReader.getIPFromPeerID(id).toString();
 	}
 
-	synchronized void sendBitfieldMessage() {
+	void sendBitfieldMessage() {
 		Bitfield.constructBitfieldMessage();
 	}
 
-	public synchronized double getDownloadRateInKBps() { // KiloBytes per second
+	public double getDownloadRateInKBps() { // KiloBytes per second
 		return ((double) cumulativeBytesDownloaded.get() / 1000.0 * 1000000000
 				/ (double) cumulativeDownloadTimeNanoseconds.get());
 	}
 
-	public synchronized void unchokePeer() {
+	public void unchokePeer() {
 		byte[] unchokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, false);
 		ChokeHandler.unchokePeer(otherPeerID);
 		System.out.println(Logger.getTimestamp() + ": Sending UNCHOKE message to " + otherPeerID);
 		sendMessage(unchokeMsg);
 	}
 
-	public synchronized void chokePeer() {
+	public void chokePeer() {
 		byte[] chokeMsg = ChokeHandler.constructChokeMessage(otherPeerID, true);
 		ChokeHandler.chokePeer(otherPeerID);
 		System.out.println(Logger.getTimestamp() + ": Sending CHOKE message to " + otherPeerID);

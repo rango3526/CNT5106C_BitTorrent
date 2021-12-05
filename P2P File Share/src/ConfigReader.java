@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,13 +12,27 @@ public class ConfigReader {
 
     static String pathToPeerInfoCfg = "./config/PeerInfo.cfg";
     static String pathToCommonCfg = "./config/Common.cfg";
+    private static volatile List<Integer> allPeerIDs = new ArrayList<>();
+    private static volatile ConcurrentHashMap<Integer, Integer> peerIDToPort = new ConcurrentHashMap<>();
+    private static volatile ConcurrentHashMap<Integer, InetAddress> peerIDToIP = new ConcurrentHashMap<>();
+    private static volatile ConcurrentHashMap<Integer, Integer> peerIDToState = new ConcurrentHashMap<>();
+    private static volatile int numPreferredNeighbors = -1;
+    private static volatile int unchokingInterval = -1;
+    private static volatile int optimisticUnchokeInterval = -1;
+    private static volatile String fileName = "";
+    private static volatile int fileSize = -1;
+    private static volatile int pieceSize = -1;
 
     public static List<Integer> getAllPeerIDs() {
+        if (!allPeerIDs.isEmpty())
+            return new ArrayList<>(allPeerIDs);
+            
         List<Integer> peerIDList = new ArrayList<>();
+        Scanner scan = null;
         // Return list of client IDs (i.e. 1001, 1002, 1003, etc.)
         try {
             int peerID;
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
+            scan = new Scanner(new File(pathToPeerInfoCfg));
             String info = "";
             while (scan.hasNextLine()) {
                 info = scan.nextLine();
@@ -27,188 +42,284 @@ public class ConfigReader {
                 peerIDList.add(peerID);
             }
             scan.close();
-            return peerIDList;
+            allPeerIDs = peerIDList;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file in getAllPeerIDs:\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Read all peer IDs from the config file");
+        return new ArrayList<>(allPeerIDs);
     }
 
     public static InetAddress getIPFromPeerID(int peerID) {
+        if (peerIDToIP.containsKey(peerID))
+            return peerIDToIP.get(peerID);
+
+        Scanner scan = null;
         try {
             // Given a peerID, return the IP of that client (i.e. peerID = 1001, return IP
             // of client 1001)
-            @SuppressWarnings("resource")
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            String[] placeHolder = scan.nextLine().split("\\s+");
-            InetAddress peerIP = null;
+            scan = new Scanner(new File(pathToPeerInfoCfg));
+            String info = "";
             while (scan.hasNextLine()) {
-                if (peerID == Integer.parseInt(placeHolder[0])) {
-                    peerIP = InetAddress.getByName(placeHolder[1]);
-                    return peerIP;
-                } else if (peerID != Integer.parseInt(placeHolder[0])) {
-                    placeHolder = scan.nextLine().split("\\s+");
-                    // return peerIP;
-                }
+                info = scan.nextLine();
+                String[] placeHolder = info.split("\\s+");
+                peerIDToIP.put(Integer.parseInt(placeHolder[0]), InetAddress.getByName(placeHolder[1]));
             }
+
             scan.close();
-            return peerIP;
         } catch (Exception e) {
             // System.out.println(Logger.getTimestamp() + ": Error reading config file in getIPFromPeerID");
             throw new RuntimeException("Error reading config file in getIPFromPeerID:\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Assigned all IPs for each peer from config file");
+        return peerIDToIP.get(peerID);
     }
 
     public static int getPortFromPeerID(int peerID) {
+        if (peerIDToPort.containsKey(peerID))
+            return peerIDToPort.get(peerID);
+
+        Scanner scan = null;
         try {
-            // Given a peerID, return the port of that client (i.e. peerID = 1001, return
-            // port of client 1001)
-            @SuppressWarnings("resource")
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            int peerPort = 0;
-            String[] placeHolder = scan.nextLine().split("\\s+");
+            // Given a peerID, return the IP of that client (i.e. peerID = 1001, return IP
+            // of client 1001)
+            scan = new Scanner(new File(pathToPeerInfoCfg));
+            String info = "";
             while (scan.hasNextLine()) {
-                if (peerID == Integer.parseInt(placeHolder[0])) {
-                    peerPort = Integer.parseInt(placeHolder[2]);
-                    return peerPort;
-                } else if (peerID != Integer.parseInt(placeHolder[0])) {
-                    placeHolder = scan.nextLine().split("\\s+");
-                }
+                info = scan.nextLine();
+                String[] placeHolder = info.split("\\s+");
+                peerIDToPort.put(Integer.parseInt(placeHolder[0]), Integer.parseInt(placeHolder[2]));
+
             }
+            
             scan.close();
-            return peerPort;
         } catch (Exception e) {
-            throw new RuntimeException("Error reading config file in getPortFromPeerID:\n" + e.getStackTrace());
+            // System.out.println(Logger.getTimestamp() + ": Error reading config file in getIPFromPeerID");
+            throw new RuntimeException("Error reading config file in getIPFromPeerID:\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Assigned all ports for each peer from config file");
+        return peerIDToPort.get(peerID);
     }
 
     public static int getStateFromPeerID(int peerID) {
+        if (peerIDToState.containsKey(peerID))
+            return peerIDToState.get(peerID);
+
+        System.out.println("Beginning to read state from config file...");
+
+        Scanner scan = null;
         try {
-            // Given a peerID, return the state of that client (i.e. peerID = 1001, return
-            // state of client 1001 which will be 0 or 1)
-            @SuppressWarnings("resource")
-            Scanner scan = new Scanner(new File(pathToPeerInfoCfg));
-            int state = 0;
-            String[] placeHolder = scan.nextLine().split("\\s+");
+            // Given a peerID, return the IP of that client (i.e. peerID = 1001, return IP
+            // of client 1001)
+            scan = new Scanner(new File(pathToPeerInfoCfg));
+            String info = "";
             while (scan.hasNextLine()) {
-                if (peerID == Integer.parseInt(placeHolder[0])) {
-                    state = Integer.parseInt(placeHolder[3]);
-                    return state;
-                } else if (peerID != Integer.parseInt(placeHolder[0])) {
-                    placeHolder = scan.nextLine().split("\\s+");
-                }
+                info = scan.nextLine();
+                String[] placeHolder = info.split("\\s+");
+                peerIDToState.put(Integer.parseInt(placeHolder[0]), Integer.parseInt(placeHolder[3]));
             }
+            
             scan.close();
-            return state;
         } catch (Exception e) {
-            throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
+            // System.out.println(Logger.getTimestamp() + ": Error reading config file in getIPFromPeerID");
+            throw new RuntimeException("Error reading config file in getIPFromPeerID:\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Assigned all file possessions (states) for each peer from config file");
+        return peerIDToState.get(peerID);
     }
 
     public static int getNumPreferredNeighbors() {
+        if (numPreferredNeighbors != -1)
+            return numPreferredNeighbors;
+
+        Scanner scan = null;
         try {
             // Get number of preferred neighbors from Common.cfg
-            int numOfPreferredNeighbors = 0;
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            int newNumPreferredNeighbors = 0;
+            scan = new Scanner(new File(pathToCommonCfg));
             String file = scan.nextLine();
             String[] neighbors = file.split("\\s+");
-            numOfPreferredNeighbors = Integer.parseInt(neighbors[1]);
+            newNumPreferredNeighbors = Integer.parseInt(neighbors[1]);
 
             scan.close();
-            return numOfPreferredNeighbors;
+            numPreferredNeighbors = newNumPreferredNeighbors;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Set number of preferred neighbors to " + numPreferredNeighbors + " from config file");
+        return numPreferredNeighbors;
     }
 
     public static int getUnchokingInterval() {
+        if (unchokingInterval != -1)
+            return unchokingInterval;
+
+        Scanner scan = null;
         try {
             // Get the unchoking interval from Common.cfg
-            int unchokeInterval = 0;
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            int newUnchokingInterval = 0;
+            scan = new Scanner(new File(pathToCommonCfg));
             scan.nextLine();
             String file = scan.nextLine();
             String[] unchoke = file.split("\\s+");
-            unchokeInterval = Integer.parseInt(unchoke[1]);
+            newUnchokingInterval = Integer.parseInt(unchoke[1]);
 
             scan.close();
-            return unchokeInterval;
+            unchokingInterval = newUnchokingInterval;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Set nchoking interval to " + unchokingInterval + " from config file");
+        return unchokingInterval;
     }
 
     public static int getOptimisticUnchokingInterval() {
+        if (optimisticUnchokeInterval != -1)
+            return optimisticUnchokeInterval;
+
+        Scanner scan = null;
         try {
             // Get the optimistic unchoking interval from Common.cfg
-            int optimisticUnchokeInterval = 0;
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            int newOptimisticUnchokeInterval = 0;
+            scan = new Scanner(new File(pathToCommonCfg));
             for (int i = 0; i <= 1; i++) {
                 scan.nextLine();
             }
             String file = scan.nextLine();
             String[] optimisticUnchoke = file.split("\\s+");
-            optimisticUnchokeInterval = Integer.parseInt(optimisticUnchoke[1]);
+            newOptimisticUnchokeInterval = Integer.parseInt(optimisticUnchoke[1]);
 
             scan.close();
-            return optimisticUnchokeInterval;
+            optimisticUnchokeInterval = newOptimisticUnchokeInterval;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Set optimistic unchoking interval to " + optimisticUnchokeInterval + " from config file");
+        return optimisticUnchokeInterval;
     }
 
     public static String getFileName() {
+        if (!fileName.equals(""))
+            return fileName;
+
+        Scanner scan = null;
         try {
             // Get the name of the file from Common.cfg
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            scan = new Scanner(new File(pathToCommonCfg));
             for (int i = 0; i <= 2; i++) {
                 scan.nextLine();
             }
-            String fileName = scan.nextLine();
-            String[] unchoke = fileName.split("\\s+");
-            fileName = unchoke[1];
+            String newFileName = scan.nextLine();
+            String[] unchoke = newFileName.split("\\s+");
+            newFileName = unchoke[1];
 
             scan.close();
-            return fileName;
+            
+            fileName = newFileName;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+                scan.close();
+        }
+
+        System.out.println("Retrieved filename " + fileName + " from config file");
+        return fileName;
     }
 
     public static int getFileSize() {
+        if (fileSize != -1)
+            return fileSize;
+
+        Scanner scan = null;
         try {
             // Get the specified size of the file from Common.cfg
-            int fileSize = 0;
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            int newFileSize = 0;
+            scan = new Scanner(new File(pathToCommonCfg));
             for (int i = 0; i <= 3; i++) {
                 scan.nextLine();
             }
             String file = scan.nextLine();
             String[] size = file.split("\\s+");
-            fileSize = Integer.parseInt(size[1]);
+            newFileSize = Integer.parseInt(size[1]);
 
             scan.close();
-            return fileSize;
+            fileSize = newFileSize;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+                scan.close();
+        }
+
+        System.out.println("Retrieved file size " + fileSize + " from config file");
+        return fileSize;
     }
 
     public static int getPieceSize() {
+        if (pieceSize != -1)
+            return pieceSize;
+
+        Scanner scan = null;
         try {
             // Get the specified piece size of the file from Common.cfg
-            int pieceSize = 0;
-            Scanner scan = new Scanner(new File(pathToCommonCfg));
+            int newPieceSize = 0;
+            scan = new Scanner(new File(pathToCommonCfg));
             for (int i = 0; i <= 4; i++) {
                 scan.nextLine();
             }
             String file = scan.nextLine();
             String[] size = file.split("\\s+");
-            pieceSize = Integer.parseInt(size[1]);
+            newPieceSize = Integer.parseInt(size[1]);
 
             scan.close();
-            return pieceSize;
+            pieceSize = newPieceSize;
         } catch (Exception e) {
             throw new RuntimeException("Error reading config file:\n" + e.getMessage() + "\n" + e.getStackTrace());
         }
+        finally {
+            if (scan != null)
+            scan.close();
+        }
+
+        System.out.println("Retrieved piece size " + pieceSize + " from config file");
+        return pieceSize;
     }
 }

@@ -7,7 +7,6 @@ import java.util.*;
 
 public class Server extends Thread {
 
-	public static final int sPort = 6039;   //The server will be listening on this port number
 	public static volatile int selfClientID = -1;
 	public static volatile ServerSocket listener;
 
@@ -16,7 +15,7 @@ public class Server extends Thread {
 		long startTime = System.currentTimeMillis();
 		System.out.println(Logger.getTimestamp() + ": " + startTime + ": The server is running.");
 		try {
-			listener = new ServerSocket(sPort);
+			listener = new ServerSocket(ConfigReader.getPortFromPeerID(selfClientID));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -28,7 +27,7 @@ public class Server extends Thread {
 				Client c;
 				try {
 					c = new Client(listener.accept(), false);
-					System.out.println(Logger.getTimestamp() + ": Peer connected! Starting handshake.");
+					System.out.println(Logger.getTimestamp() + ": Unknown peer made a TCP connection!");
 					c.start();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -50,7 +49,8 @@ public class Server extends Thread {
 			}
 		} finally {
 			try {
-				listener.close();
+				if (listener != null)
+					listener.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

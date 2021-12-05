@@ -7,6 +7,12 @@ public class OptimisticUnchokeHandler extends Thread {
 
     @Override
     public void run() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+
         while (PeerProcess.isRunning) {
             unchokeRandomNeighbor();
             try {
@@ -14,6 +20,7 @@ public class OptimisticUnchokeHandler extends Thread {
             } catch (InterruptedException e) {
                 System.out.print("Optimistic unchoke sleep interrupted");
                 e.printStackTrace();
+                break;
             }
         }
     }
@@ -36,6 +43,7 @@ public class OptimisticUnchokeHandler extends Thread {
 
         PeerProcess.unchokePeer(eligibleNeighbors.get(randomEligibleNeighborIndex));
         optimisticallyUnchokedNeighbor = eligibleNeighbors.get(randomEligibleNeighborIndex);
+        Logger.logNewOptimisticallyUnchokedNeighbor(optimisticallyUnchokedNeighbor);
         System.out.println(Logger.getTimestamp() + ": Peer " + eligibleNeighbors.get(randomEligibleNeighborIndex) + " OPTIMISTICALLY UNCHOKED");
     }
 
