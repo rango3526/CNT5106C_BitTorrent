@@ -1,0 +1,20 @@
+"filename", "language", "Java", "comment", "blank", "total"
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/ActualMessageHandler.java", "Java", 83, 6, 7, 96
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/Bitfield.java", "Java", 128, 13, 37, 178
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/ChokeHandler.java", "Java", 50, 0, 13, 63
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/Client.java", "Java", 168, 18, 27, 213
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/ConfigReader.java", "Java", 262, 18, 45, 325
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/DebugLogger.java", "Java", 34, 7, 5, 46
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/FileHandler.java", "Java", 112, 1, 28, 141
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/FindPreferredNeighbors.java", "Java", 81, 14, 19, 114
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/Handshake.java", "Java", 48, 3, 12, 63
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/HaveHandler.java", "Java", 16, 1, 5, 22
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/InterestHandler.java", "Java", 37, 1, 9, 47
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/Logger.java", "Java", 85, 7, 18, 110
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/OptimisticUnchokeHandler.java", "Java", 41, 2, 11, 54
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/PeerProcess.java", "Java", 134, 22, 33, 189
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/PieceHandler.java", "Java", 45, 0, 9, 54
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/RequestHandler.java", "Java", 65, 3, 23, 91
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/Server.java", "Java", 45, 7, 8, 60
+"/Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src/StartRemotePeers.java", "Java", 99, 112, 37, 248
+"Total", "-", 1533, 235, 346, 2114

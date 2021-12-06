@@ -1,21 +1,21 @@
 # Summary
 
-Date : 2021-10-22 20:27:34
+Date : 2021-12-05 19:48:12
 
-Directory c:\Users\r2che\Desktop\CNT5106C_BitTorrent\P2P File Share\src
+Directory /Users/rangerchenore/GithubProjects/CNT5106C_BitTorrent/P2P File Share/src
 
-Total : 17 files,  759 codes, 83 comments, 172 blanks, all 1014 lines
+Total : 18 files,  1533 codes, 235 comments, 346 blanks, all 2114 lines
 
 [details](details.md)
 
 ## Languages
 | language | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Java | 17 | 759 | 83 | 172 | 1,014 |
+| Java | 18 | 1,533 | 235 | 346 | 2,114 |
 
 ## Directories
 | path | files | code | comment | blank | total |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| . | 17 | 759 | 83 | 172 | 1,014 |
+| . | 18 | 1,533 | 235 | 346 | 2,114 |
 
 [details](details.md)

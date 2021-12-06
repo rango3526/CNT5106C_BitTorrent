@@ -5,6 +5,7 @@ import java.util.*;
 
 public class Bitfield {
     private static volatile int maxPieceAmt = -1;
+    private static volatile AtomicInteger curPieceNumPossessed = new AtomicInteger(0);
     private static volatile int selfClientID = -1;
     private static volatile ConcurrentHashMap<Integer, BitSet> bitfields = new ConcurrentHashMap<>();
 
@@ -69,11 +70,12 @@ public class Bitfield {
     }
 
     public static void selfReceivedPiece(int pieceIndex) {
+        curPieceNumPossessed = new AtomicInteger(curPieceNumPossessed.get() + 1);
         bitfields.get(selfClientID).set(pieceIndex, true);
         // if (!selfStartedWithData && curPieceNumPossessed.get() == maxPieceAmt) {
         //     FileHandler.combinePiecesIntoCompleteFile();
         // }
-        if (getNumberOfPiecesClientHas() >= maxPieceAmt) {
+        if (curPieceNumPossessed.get() == maxPieceAmt) {
             FileHandler.combinePiecesIntoCompleteFile();
             hasAllPieces = true;
         }
@@ -170,6 +172,6 @@ public class Bitfield {
     }
 
     public static int getNumberOfPiecesClientHas() {
-        return getSelfBitfield().cardinality();
+        return curPieceNumPossessed.get();
     }
 }
